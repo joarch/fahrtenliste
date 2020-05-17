@@ -1,0 +1,12 @@
+Installation als Embedded Python
+- Download und Unzip "Python3.8 Embedding  Install"
+-- in python3.8._pth auskommentieren von "import site"
+-- download get-pip.py von der Webseite https://pip.pypa.io/en/stable/installing/
+-- Aufruf von python get-pip.py
+-- dann Installation mittels Scripts\pip install ...
+--- pip install django
+--- pip install django-nested-admin
+--- pip install django-admin-list-filter-dropdown
+--- pip install python-dateutil
+--- pip install django-reversion
+--- pip install django-reversion-compare
