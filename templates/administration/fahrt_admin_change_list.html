@@ -1,0 +1,30 @@
+{% extends 'admin/change_list.html' %}
+{% load static %}
+
+{% block object-tools %}
+    <script type="text/javascript" src="{% static "3rdparty/js/jquery-3.2.1.min.js" %}"></script>
+    <script type="text/javascript" src="{% static "3rdparty/js/qurl.js" %}"></script>
+    <script type="text/javascript" src="{% static "js/common.js" %}"></script>
+    <script type="application/javascript">
+        $(document).ready(function () {
+            initButton();
+        });
+
+        function initButton() {
+            $('#report-button').on('click', function (e) {
+                e.preventDefault();
+                var href = "report/";
+                href += '?datum__month=' + getQueryParam("datum__month");
+                href += '&datum__year=' + getQueryParam("datum__year");
+                href += '&datum__day=' + getQueryParam("datum__day");
+                window.location.href = href;
+            });
+        }
+
+    </script>
+    <div>
+        <button id="report-button" title="Erstellt einen Report über eindeutige Fahrten im gewählten Zeitraum oder wenn kein Zeitraum gewählt wurde im aktuellen Monat.">Report erstellen</button>
+    </div>
+    <br/>
+    {{ block.super }}
+{% endblock %}

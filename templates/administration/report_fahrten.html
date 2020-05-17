@@ -1,0 +1,44 @@
+{% extends "admin/base_site.html" %}
+{% load i18n admin_urls static admin_list %}
+
+{% block title %}Fahrtenliste | Report{% endblock %}
+
+{% block branding %}
+    <h1 id="site-name">Report eindeutige Fahrten</h1>
+{% endblock %}
+
+{% block breadcrumbs %}
+    <div class="breadcrumbs">
+        <a href="{% url 'admin:index' %}">{% trans 'Home' %}</a>
+        &rsaquo; <a href="{{ data.fahrten_url }}">Fahrten</a>
+    </div>
+{% endblock %}
+
+{% block content %}
+    <h1>{{ data.report_beschreibung }}</h1>
+    <table>
+        <tr>
+            <th>Datum</th>
+            <th>Adresse</th>
+            <th>Kunde</th>
+            <th>Entfernung (km)</th>
+        </tr>
+        {% for key, fahrten in data.eindeutige_fahrten.items %}
+            {% for fahrt in fahrten %}
+                <tr>
+                    <td>{{ fahrt.datum }}</td>
+                    <td>{{ fahrt.adresse }}</td>
+                    <td>{{ fahrt.kunde }}</td>
+                    <td>{{ fahrt.entfernung }}</td>
+                </tr>
+            {% endfor %}
+        {% endfor %}
+    </table>
+    <h4 style="">Anzahl Rechnungen: {{ data.anzahl_fahrten }}</h4>
+    <h4 style="">Anzahl Kunden: {{ data.anzahl_kunden }}</h4>
+    <h4 style="">Anzahl Adressen: {{ data.anzahl_adressen }}</h4>
+    TODO
+    <h4 style="font-size: medium">Insgesamt gefahrene Kilometer: {{ data.summe_entfernung }} km.</h4>
+    <h4 style="font-size: medium">Entfernungspauschale: {{ data.summe_entfernung }} km * {{ data.faktor }} EUR/km = {{ data.entfernungspauschale }} EUR </h4>
+
+{% endblock %}
