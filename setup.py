@@ -37,7 +37,7 @@ setup(
     packages=find_packages('.', exclude=["fahrtenliste", "*.tests", "*.tests.*", "tests.*", "tests"]),
     include_package_data=True,
     url="http://example.com",
-    # license="LICENSE.txt",
+    license="LICENSE",
     description="Fahrtenliste Webapplikation und Backend.",
     long_description=README,
     install_requires=["django",
