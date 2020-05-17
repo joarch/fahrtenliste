@@ -27,8 +27,8 @@ class Adresse(models.Model):
 class Kunde(models.Model):
     id = models.AutoField(primary_key=True)
     anrede = models.CharField(max_length=20, blank=True, null=True)
-    vorname = models.CharField(max_length=200)
-    nachname = models.CharField(max_length=200, blank=True, null=True)
+    vorname = models.CharField(max_length=200, blank=True, null=True)
+    nachname = models.CharField(max_length=200)
     adresse = models.ForeignKey(Adresse, blank=True, null=True, on_delete=models.SET_NULL)
 
     def __str__(self):
