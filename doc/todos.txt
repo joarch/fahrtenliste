@@ -7,9 +7,6 @@ Upload Github
 # im Report
 Insgesamt gefahrene Kilometer: {{ data.summe_entfernung }} km. faktor * entfernungspauschale
 
-# Optionen neue Tabelle
-- entfernungspauschale
-
 # Report eindeutige Fahrten im Monat als PDF oder drucken
 - z.B.: https://medium.com/alliedcrowds/generating-pdf-reports-programmatically-in-python-using-api-data-9f4dfe2cad6a
 

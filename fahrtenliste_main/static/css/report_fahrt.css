@@ -1,0 +1,11 @@
+
+@media print {
+    .aufmass-container {
+        margin: 0 0 0 0;
+    }
+
+    @page {
+        size: 21cm 29.7cm;
+        margin: 15mm 5mm 15mm 10mm;
+    }
+}

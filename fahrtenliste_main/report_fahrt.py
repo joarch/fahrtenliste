@@ -14,26 +14,31 @@ def get_report_data(von, bis):
     summe_entfernung = 0
 
     eindeutige_fahrten = defaultdict(list)
-    for fahrt in fahrten_alle:
-        kunden.add(fahrt.kunde)
-        key = "{}:{}:{}".format(fahrt.datum.strftime("%Y-%m-%d"), fahrt.adresse.str_kurz(), fahrt.entfernung)
+    for idx, fahrt in enumerate(fahrten_alle):
+        kunden.add(fahrt.kunde or str(-1 * idx))
+        key = "{}:{}:{}".format(fahrt.datum.strftime("%Y-%m-%d"),
+                                fahrt.adresse.str_kurz() if fahrt.adresse else str(-1 * idx),
+                                fahrt.entfernung)
         fahrt_daten = {
             "datum": fahrt.datum.strftime("%d.%m.%Y"),
-            "adresse": fahrt.adresse.str_kurz(),
+            "adresse": fahrt.adresse.str_kurz() if fahrt.adresse else "",
             "entfernung": fahrt.entfernung,
-            "kunde": fahrt.kunde.str_kurz(),
-            "adresse_id": fahrt.adresse.id,
+            "kunde": fahrt.kunde.str_kurz() if fahrt.kunde else "?",
+            "adresse_id": fahrt.adresse.id if fahrt.adresse else -1 * idx,
         }
         eindeutige_fahrten[key].append(fahrt_daten)
 
     eindeutige_fahrten = collections.OrderedDict(sorted(eindeutige_fahrten.items()))
     for key, fahrten_endeutig in eindeutige_fahrten.items():
         # nur eindeutige Adressen und Kilometer zählen
+        entfernung = fahrten_endeutig[0]["entfernung"] or 0
         adressen.add(fahrten_endeutig[0]["adresse_id"])
-        summe_entfernung += fahrten_endeutig[0]["entfernung"]
+        summe_entfernung += entfernung
 
         # Datum, Adresse und Entfernung sollen nur in der ersten Zeile einer Adresse sichtbar sein
         for idx, fahrt in enumerate(fahrten_endeutig):
+            if fahrt["entfernung"] is None:
+                fahrt["entfernung"] = "?"
             if idx != 0:
                 fahrt["datum"] = ""
                 fahrt["adresse"] = ""
@@ -49,7 +54,7 @@ def get_report_data(von, bis):
         "anzahl_fahrten": len(fahrten_alle),
         "anzahl_kunden": len(kunden),
         "anzahl_adressen": len(adressen),
-        "faktor" : faktor,
+        "faktor": faktor,
         "entfernungspauschale": entfernungspauschale,
         "report_erstellt": datetime.today()
     }
