@@ -1,4 +1,3 @@
-// Copyright 2020 Ryan Burnette
 // https://github.com/ryanburnette/Qurl
 var Qurl
     ;
