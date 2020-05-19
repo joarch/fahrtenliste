@@ -128,5 +128,8 @@ dmypy.json
 # Pyre type checker
 .pyre/
 
+# Konfiguration
+fahrtenliste/settings.py
+
 # IDE
 .idea/

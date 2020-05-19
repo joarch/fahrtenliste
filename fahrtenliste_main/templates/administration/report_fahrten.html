@@ -38,6 +38,6 @@
     <h4 style="">Anzahl Kunden: {{ data.anzahl_kunden }}</h4>
     <h4 style="">Anzahl eindeutige Adressen: {{ data.anzahl_adressen }}</h4>
     <h4 style="font-size: medium">Insgesamt gefahrene Strecke: {{ data.summe_entfernung }} km.</h4>
-    <h4 style="font-size: medium">Entfernungspauschale: {{ data.summe_entfernung }} km * {{ data.faktor }} EUR/km = {{ data.entfernungspauschale }} EUR </h4>
+    <h4 style="font-size: medium">Entfernungspauschale: {{ data.summe_entfernung }} km * {{ data.kilometerpauschale_faktor }} EUR/km = {{ data.kilometerpauschale }} EUR </h4>
 
 {% endblock %}

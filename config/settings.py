@@ -123,3 +123,14 @@ STATIC_URL = '/static/'
 (
     os.path.join(BASE_DIR, "static")
 )
+
+# MAIL
+EMAIL_HOST = 'smtp.<host>.com'
+EMAIL_HOST_PASSWORD = '<app password>'
+EMAIL_HOST_USER = '<username>'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_TO = ['...']
+
+EINSTELLUNG_NAME_KILOMETERPAUSCHALE = "kilometerpauschale"
+KILOMETERPAUSCHALE_FAKTOR = "0.3"

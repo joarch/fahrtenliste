@@ -1,12 +1,11 @@
 import collections
 from collections import defaultdict
 from datetime import datetime
-from decimal import Decimal
 
 from fahrtenliste_main.models import Fahrt
 
 
-def get_report_data(von, bis):
+def get_report_data(von, bis, kilometerpauschale_faktor):
     report_beschreibung = "Fahrten im Zeitraum: {} bis {}".format(von.strftime("%d.%m.%Y"), bis.strftime("%d.%m.%Y"))
     fahrten_alle = Fahrt.objects.filter(datum__gte=von, datum__lte=bis)
     kunden = set()
@@ -44,8 +43,7 @@ def get_report_data(von, bis):
                 fahrt["adresse"] = ""
                 fahrt["entfernung"] = ""
 
-    faktor = Decimal("0.3")
-    entfernungspauschale = faktor * summe_entfernung
+    kilometerpauschale = kilometerpauschale_faktor * summe_entfernung
 
     return {
         "report_beschreibung": report_beschreibung,
@@ -54,7 +52,7 @@ def get_report_data(von, bis):
         "anzahl_fahrten": len(fahrten_alle),
         "anzahl_kunden": len(kunden),
         "anzahl_adressen": len(adressen),
-        "faktor": faktor,
-        "entfernungspauschale": entfernungspauschale,
+        "kilometerpauschale_faktor": kilometerpauschale_faktor,
+        "kilometerpauschale": kilometerpauschale,
         "report_erstellt": datetime.today()
     }

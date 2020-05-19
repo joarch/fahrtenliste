@@ -1,8 +1,10 @@
 from datetime import datetime
+from decimal import Decimal
 from threading import Semaphore
 
 from django import forms
-from django.contrib import admin, messages
+from django.conf import settings
+from django.contrib import admin
 from django.core.exceptions import ValidationError
 from django.db.models import Max
 from django.shortcuts import render
@@ -136,7 +138,9 @@ class FahrtAdmin(CompareVersionAdmin):
             von, bis = get_monat_von_bis(datetime.today())
 
         # Daten des Reports aus der Datenban lesen
-        data = get_report_data(von, bis)
+        #kilometerpauschale_faktor = Einstellung.objects.get(
+        #    name=settings.EINSTELLUNG_NAME_KILOMETERPAUSCHALE)
+        data = get_report_data(von, bis, Decimal(settings.KILOMETERPAUSCHALE_FAKTOR))
 
         # Url um zur Liste der Fahrten zurückzukehren
         url_params = list()

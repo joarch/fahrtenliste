@@ -10,5 +10,3 @@ from fahrtenliste_main.administration import log_entry_admin
 admin.site.site_title = "Verwaltung"
 admin.site.site_header = "Fahrtenliste"
 admin.site.index_title = "Fahrtenliste"
-
-
