@@ -12,7 +12,7 @@ from django.urls import path
 from reversion_compare.admin import CompareVersionAdmin
 
 from fahrtenliste_main.datum_util import get_jahr_von_bis, get_monat_von_bis
-from fahrtenliste_main.models import Fahrt
+from fahrtenliste_main.models import Fahrt, Einstellung
 from fahrtenliste_main.report_fahrt import get_report_data
 
 semaphore_fahrt_nr = Semaphore()
@@ -138,9 +138,10 @@ class FahrtAdmin(CompareVersionAdmin):
             von, bis = get_monat_von_bis(datetime.today())
 
         # Daten des Reports aus der Datenban lesen
-        #kilometerpauschale_faktor = Einstellung.objects.get(
-        #    name=settings.EINSTELLUNG_NAME_KILOMETERPAUSCHALE)
-        data = get_report_data(von, bis, Decimal(settings.KILOMETERPAUSCHALE_FAKTOR))
+        # TODO als convenience Methode mit besserer Fehlermeldung, wenn nicht da
+        kilometerpauschale_faktor = Einstellung.objects.get(
+            name=settings.EINSTELLUNG_NAME_KILOMETERPAUSCHALE)
+        data = get_report_data(von, bis, kilometerpauschale_faktor.wert_decimal)
 
         # Url um zur Liste der Fahrten zurückzukehren
         url_params = list()
