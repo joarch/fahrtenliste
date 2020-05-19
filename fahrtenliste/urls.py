@@ -16,9 +16,10 @@ Including another URLconf
 from django.conf.urls import url
 from django.contrib import admin
 from django.urls import path, include
+from django.shortcuts import redirect
 
 urlpatterns = [
     path('admin/', admin.site.urls, name='admin'),
-    path('', admin.site.urls, name='admin_home'),
-    url(r'^_nested_admin/', include('nested_admin.urls')),
+    url(r'^$', lambda _: redirect('admin:index'), name='index'),
+    url(r'^_nested_admin/', include(('nested_admin.urls', 'nested_admin'), namespace='nested_admin')),
 ]
