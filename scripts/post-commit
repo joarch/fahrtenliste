@@ -1,0 +1,11 @@
+#!/bin/sh
+
+remote="$1"
+url="$2"
+
+export version=$(cat VERSION.txt)
+echo "VERSION = '"$version"'" > fahrtenliste_main/version.py
+
+git commit --no-verify fahrtenliste_main/version.py -m "# Update Version"
+
+exit 0

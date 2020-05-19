@@ -1,13 +1,9 @@
-# Version beim Start ausgeben
-
-# Report eindeutige Fahrten im Monat als PDF oder drucken
-- z.B.: https://medium.com/alliedcrowds/generating-pdf-reports-programmatically-in-python-using-api-data-9f4dfe2cad6a
-
-# Export und Import in CSV Datei
-- mit konfigurierbaren Spalten Mapping.
-
 # Bessere Filter in der Fahrtentabelle:
 - Admin Fahrt Filter DropDown Kunde (django_admin_listfilter_dropdown)
 - Admin Fahrt Filter Jahr/Monat (django_admin_listfilter_dropdown)
 
-# Version im Seiten Header oder Footer
+# Report als PDF oder drucken
+- z.B.: https://medium.com/alliedcrowds/generating-pdf-reports-programmatically-in-python-using-api-data-9f4dfe2cad6a
+
+# Export und Import in CSV Datei
+- mit konfigurierbaren Spalten Mapping.

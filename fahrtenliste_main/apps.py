@@ -8,4 +8,6 @@ class FahrtenlisteConfig(AppConfig):
     verbose_name = ' Fahrtenliste'
 
 
+print("***************************")
 print(f"Version: {version.VERSION}")
+print("***************************")
