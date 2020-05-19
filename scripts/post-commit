@@ -6,6 +6,11 @@ url="$2"
 export version=$(cat VERSION.txt)
 echo "VERSION = '"$version"'" > fahrtenliste_main/version.py
 
-git commit --no-verify fahrtenliste_main/version.py -m "# Update Version"
+# immer extra Commit, git amend und no-verify geht nicht zusammen :(
+#git reset --soft HEAD^
+#git commit --no-verify -c ORIG_HEAD fahrtenliste_main/version.py
+# git commit --no-verify --amend --no-edit fahrtenliste_main/version.py
+
+git commit --no-verify fahrtenliste_main/version.py -m "#Update Version"
 
 exit 0
