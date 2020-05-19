@@ -1,3 +1,4 @@
+rem mit token
 cd src
 git pull
 cd ..
