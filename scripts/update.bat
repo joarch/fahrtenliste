@@ -1,4 +1,4 @@
-rem mit token
+@echo off
 cd src
 git pull
 cd ..
