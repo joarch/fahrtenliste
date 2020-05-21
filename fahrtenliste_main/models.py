@@ -41,7 +41,10 @@ class Kunde(models.Model):
         return str
 
     def str_kurz(self):
-        return f"{self.nachname}, {self.vorname}"
+        if self.vorname is not None:
+            return f"{self.nachname}, {self.vorname}"
+        else:
+            return f"{self.nachname}"
 
     class Meta:
         verbose_name = "Kunde"
