@@ -6,7 +6,7 @@ from django.utils.html import format_html
 
 class Adresse(models.Model):
     id = models.AutoField(primary_key=True)
-    strasse = models.CharField(max_length=512, verbose_name="Straße")
+    strasse = models.CharField(max_length=512, verbose_name="Straße und Hausnummer")
     plz = models.CharField(max_length=5, verbose_name="PLZ")
     ort = models.CharField(max_length=512, verbose_name="Ort")
     entfernung = models.IntegerField(verbose_name="Entfernung (km)", help_text="Entfernung in km")

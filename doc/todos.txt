@@ -2,12 +2,10 @@
 - sql insert into einstellung kilometerpauschale
 - sql insert into einstellung name
 
-# Report als PDF oder drucken
-- z.B.: https://medium.com/alliedcrowds/generating-pdf-reports-programmatically-in-python-using-api-data-9f4dfe2cad6a
+# Report erstellen Button als tool button a.link
 
 # Bessere Filter in der Fahrtentabelle:
 - Admin Fahrt Filter DropDown Kunde (django_admin_listfilter_dropdown)
-- Admin Fahrt Filter Jahr/Monat (django_admin_listfilter_dropdown)
 
 # Export und Import in CSV Datei
 - mit konfigurierbaren Spalten Mapping.

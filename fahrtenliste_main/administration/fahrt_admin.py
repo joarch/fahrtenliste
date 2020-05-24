@@ -1,16 +1,59 @@
+from datetime import datetime
 from threading import Semaphore
 
+from dateutil.relativedelta import relativedelta
 from django import forms
 from django.contrib import admin
+from django.contrib.admin import SimpleListFilter
 from django.core.exceptions import ValidationError
 from django.db.models import Max
 from django.urls import path
+from django.utils import formats
 from reversion_compare.admin import CompareVersionAdmin
 
 from administration.fahrt_admin_report import show_report
 from fahrtenliste_main.models import Fahrt
 
 semaphore_fahrt_nr = Semaphore()
+
+
+class FahrtMonatFilter(SimpleListFilter):
+    title = 'Zeitraum'
+    parameter_name = 'zeitraum'
+
+    def lookups(self, request, model_admin):
+        max_datum = Fahrt.objects.aggregate(Max('datum'))['datum__max']
+        max_datum = datetime(max_datum.year, max_datum.month, 1)
+        result = list()
+        for i in range(0, 12):
+            filter_datum = max_datum - relativedelta(months=i)
+            str_monat_jahr = formats.date_format(filter_datum, format="YEAR_MONTH_FORMAT", use_l10n=True)
+
+            queryset = Fahrt.objects.filter(datum__month=filter_datum.month, datum__year=filter_datum.year)
+            anzahl_gesamt_im_monat = queryset.count()
+
+            adresse_ort_filter = request.GET.get("adresse__ort")
+            if adresse_ort_filter:
+                queryset = queryset.filter(adresse__ort=adresse_ort_filter)
+            anzahl_getfiltert_im_monat = queryset.count()
+
+            if anzahl_gesamt_im_monat != anzahl_getfiltert_im_monat:
+                str_anzahl = f"{anzahl_getfiltert_im_monat}/{anzahl_gesamt_im_monat}"
+            else:
+                str_anzahl = f"{anzahl_gesamt_im_monat}"
+
+            result.append((f"{filter_datum.year}-{filter_datum.month}", f"{str_monat_jahr} ({str_anzahl})"))
+        return result
+
+    def queryset(self, request, queryset):
+        value = self.value()
+        if value:
+            jahr_monat = value.split("-")
+            monat = int(jahr_monat[1])
+            jahr = int(jahr_monat[0])
+            return queryset.filter(datum__month=monat, datum__year=jahr)
+        else:
+            return queryset
 
 
 class FahrtAdminForm(forms.ModelForm):
@@ -55,7 +98,7 @@ class FahrtAdmin(CompareVersionAdmin):
                      'adresse__strasse', 'adresse__plz', 'adresse__ort',)
     readonly_fields = ('id',)
     date_hierarchy = 'datum'
-    list_filter = ('adresse__ort',)
+    list_filter = (FahrtMonatFilter, 'adresse__ort',)
     autocomplete_fields = ['kunde', 'adresse']
     form = FahrtAdminForm
 
