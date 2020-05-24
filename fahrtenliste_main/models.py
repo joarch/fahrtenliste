@@ -1,6 +1,7 @@
 import locale
 
 from django.db import models
+from django.utils.html import format_html
 
 
 class Adresse(models.Model):
@@ -84,6 +85,27 @@ class Fahrt(models.Model):
         return f"Adresse: {self.adresse.str_kurz() if self.adresse else ''}; " \
                f"Entfernung: {self.entfernung} km"
 
+    def str_adresse_kurz(self):
+        if self.adresse is not None:
+            if self.adresse.entfernung != self.entfernung:
+                title = "Die Entfernung der Fahrt weicht von der Entfernung der Adresse ab."
+                return format_html(f"{self.adresse.str_kurz()}. "
+                                   f"<span title='{title}' style='color: red;'> ({self.adresse.entfernung} km)</span>")
+            else:
+                return f"{self.adresse.str_kurz()}"
+        return ""
+
+    def str_entfernung(self):
+        if self.adresse is not None:
+            if self.adresse.entfernung != self.entfernung:
+                title = "Die Entfernung weicht von der Entfernung der Adresse ab."
+                return format_html(f"<span title='{title}' style='color: red;'>{self.entfernung}</span>")
+            else:
+                return str(self.entfernung)
+        return str(self.entfernung)
+
+    str_adresse_kurz.allow_tags = True
+
     class Meta:
         verbose_name = "Fahrt"
         verbose_name_plural = "   Fahrten"
@@ -102,14 +124,17 @@ class Einstellung(models.Model):
 
     @property
     def wert(self):
-        values = ""
+        werte = list()
         if self.wert_date:
-            values += (", " if len(values) > 0 else "") + "{:%d.%m.%Y}".format(self.wert_date)
+            werte.append(self.wert_date)
         if self.wert_char:
-            values += (", " if len(values) > 0 else "") + self.wert_char
+            werte.append(self.wert_char)
         if self.wert_decimal:
-            values += (", " if len(values) > 0 else "") + locale.format_string("%.2f", self.wert_decimal)
-        return values
+            werte.append(self.wert_decimal)
+        if len(werte) > 1:
+            raise RuntimeError(
+                f"Der Wert der Einstellung '{self.name}' ist nicht eindeutig, es darf nur ein Wert angegeben werden.")
+        return werte[0] if len(werte) == 1 else None
 
     class Meta:
         verbose_name = "Einstellung"

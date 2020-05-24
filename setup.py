@@ -46,6 +46,7 @@ setup(
                       "python-dateutil",
                       "django-reversion",
                       "django-reversion-compare",
+                      "reportlab"
                       ],
     # extras_require={
     #    'sphinx'

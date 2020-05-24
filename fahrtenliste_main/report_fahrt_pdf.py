@@ -1,3 +1,5 @@
+import os
+
 from reportlab.lib import colors
 from reportlab.lib.pagesizes import A4
 from reportlab.lib.styles import getSampleStyleSheet
@@ -30,19 +32,28 @@ class NumberedCanvas(canvas.Canvas):
                              "Seite %d von %d" % (self._pageNumber, page_count))
 
 
-def pdf_report(name, zeitraum):
-    my_data = [
+def pdf_report(dir, report_data):
+    filename = os.path.join(dir, "Entfernungspauschale.pdf")
+
+    zeilen = [
         ['Datum', 'Adresse', 'Kunde', 'Entfernung\n(km)'],
     ]
+    for fahrten in report_data["eindeutige_fahrten"].values():
+        for fahrt in fahrten:
+            # Fahrten am Tag
+            adresse = fahrt["adresse"]
+            adresse = adresse.replace(", ", "\n")
+            zeilen.append([fahrt["datum"], adresse, fahrt["kunde"], fahrt["entfernung"]])
 
     styles = getSampleStyleSheet()
 
-    doc = SimpleDocTemplate('test.pdf', pagesize=A4, topMargin=15 * mm, bottomMargin=15 * mm)
+    doc = SimpleDocTemplate(filename, pagesize=A4, topMargin=15 * mm, bottomMargin=15 * mm,
+                            title="Entfernungspauschale")
     story = list()
     story.append(Paragraph('Fahrtenliste', styles['Heading1']))
-    story.append(Paragraph(name, styles['Heading2']))
-    story.append(Paragraph('Zeitraum: 01.05.2020 bis 31.05.2020', styles['Heading3']))
-    t = Table(my_data, colWidths=[80, 200, 100, 60], repeatRows=(0,))
+    story.append(Paragraph(report_data["name"], styles['Heading2']))
+    story.append(Paragraph(report_data["report_beschreibung"], styles['Heading3']))
+    t = Table(zeilen, colWidths=[80, 200, 100, 60], repeatRows=(0,))
     t.hAlign = 'LEFT'
     t.spaceBefore = 10
     t.spaceAfter = 10
@@ -52,9 +63,15 @@ def pdf_report(name, zeitraum):
          ('INNERGRID', (0, 0), (-1, -1), 0.5, colors.black)]))
     story.append(t)
     story.append(Paragraph('&nbsp;', styles['Normal']))
-    story.append(Paragraph('Insgesamt gefahrene Strecke: 12 km.', styles['Normal']))
+    story.append(Paragraph(f'Insgesamt gefahrene Strecke: {report_data["summe_entfernung"]} km.', styles['Normal']))
     story.append(Paragraph('&nbsp;', styles['Normal']))
-    story.append(Paragraph('Entfernungspauschale: 12 km * 0,31 EUR/km = <b>3,72 EUR</b>', styles['Normal']))
+    kilometerpauschale_faktor = _format_decimal(report_data["kilometerpauschale_faktor"])
+    kilometerpauschale = _format_decimal(report_data["kilometerpauschale"])
+    story.append(Paragraph(
+        f'Entfernungspauschale: {report_data["summe_entfernung"]} km'
+        f' * {kilometerpauschale_faktor} EUR/km'
+        f' = <b>{kilometerpauschale} EUR</b>',
+        styles['Normal']))
 
     title = "Fahrtenliste: 01.05.2020 - 31.05.2020"
 
@@ -66,6 +83,14 @@ def pdf_report(name, zeitraum):
 
     doc.build(story, canvasmaker=NumberedCanvas, onLaterPages=_onLaterPages)
 
+    return filename
+
 
 if __name__ == "__main__":
     pdf_report("...", None)
+
+
+def _format_decimal(value):
+    if value is None:
+        return 0
+    return "{0:,.2f}".format(value).replace(',', ' ').replace('.', ',')

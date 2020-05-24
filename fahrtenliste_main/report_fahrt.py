@@ -5,7 +5,7 @@ from datetime import datetime
 from fahrtenliste_main.models import Fahrt
 
 
-def get_report_data(von, bis, kilometerpauschale_faktor):
+def get_report_data(von, bis, kilometerpauschale_faktor, name):
     report_beschreibung = "Fahrten im Zeitraum: {} bis {}".format(von.strftime("%d.%m.%Y"), bis.strftime("%d.%m.%Y"))
     fahrten_alle = Fahrt.objects.filter(datum__gte=von, datum__lte=bis)
     kunden = set()
@@ -46,6 +46,7 @@ def get_report_data(von, bis, kilometerpauschale_faktor):
     kilometerpauschale = kilometerpauschale_faktor * summe_entfernung
 
     return {
+        "name": name,
         "report_beschreibung": report_beschreibung,
         "eindeutige_fahrten": eindeutige_fahrten,
         "summe_entfernung": summe_entfernung,

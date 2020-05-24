@@ -22,4 +22,5 @@ urlpatterns = [
     path('admin/', admin.site.urls, name='admin'),
     url(r'^$', lambda _: redirect('admin:index'), name='index'),
     url(r'^_nested_admin/', include(('nested_admin.urls', 'nested_admin'), namespace='nested_admin')),
+    url(r'^fahrtenliste_main/', include('fahrtenliste_main.urls')),
 ]

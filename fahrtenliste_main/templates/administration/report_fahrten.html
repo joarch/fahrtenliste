@@ -14,7 +14,33 @@
     </div>
 {% endblock %}
 
+
+
+
 {% block content %}
+
+    <script type="text/javascript" src="{% static "3rdparty/js/jquery-3.2.1.min.js" %}"></script>
+    <script type="text/javascript" src="{% static "3rdparty/js/qurl.js" %}"></script>
+    <script type="text/javascript" src="{% static "js/common.js" %}"></script>
+    <script type="application/javascript">
+        $(document).ready(function () {
+            initButton();
+        });
+
+        function openPdfReport() {
+            var pdfUrl = "\/fahrtenliste_main\/report_pdf\/Fahrtenliste.pdf";
+            pdfUrl += '?datum__month=' + getQueryParam("datum__month");
+            pdfUrl += '&datum__year=' + getQueryParam("datum__year");
+            pdfUrl += '&datum__day=' + getQueryParam("datum__day");
+            window.open(pdfUrl, "_blank");
+        }
+
+    </script>
+    <div>
+        <a id="pdf-report" href="#" onclick="openPdfReport();" title="Report als PDF Dokument">PDF anzeigen</a>
+    </div>
+    <br/>
+
     <h1>{{ data.report_beschreibung }}</h1>
     <table>
         <tr>
@@ -38,6 +64,7 @@
     <h4 style="">Anzahl Kunden: {{ data.anzahl_kunden }}</h4>
     <h4 style="">Anzahl eindeutige Adressen: {{ data.anzahl_adressen }}</h4>
     <h4 style="font-size: medium">Insgesamt gefahrene Strecke: {{ data.summe_entfernung }} km.</h4>
-    <h4 style="font-size: medium">Entfernungspauschale: {{ data.summe_entfernung }} km * {{ data.kilometerpauschale_faktor }} EUR/km = {{ data.kilometerpauschale }} EUR </h4>
+    <h4 style="font-size: medium">Entfernungspauschale: {{ data.summe_entfernung }} km
+        * {{ data.kilometerpauschale_faktor }} EUR/km = {{ data.kilometerpauschale }} EUR </h4>
 
 {% endblock %}
