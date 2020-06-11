@@ -14,7 +14,9 @@ set JAHR=%datetime:~0,4%
 set MONAT=%datetime:~4,2%
 set TAG=%datetime:~6,2%
 if not exist "%DATENBANK_BACKUP_DIR%" mkdir "%DATENBANK_BACKUP_DIR%"
-cp "%DATENBANK%" "%DATENBANK_BACKUP_DIR%\%DATENBANK%_%JAHR%%MONAT%%TAG%"
+set BACKUP_FILE="%DATENBANK_BACKUP_DIR%\%JAHR%%MONAT%%TAG%__%DATENBANK%"
+cp "%DATENBANK%" %BACKUP_FILE%
+echo "Backup durchgeführt in %BACKUP_FILE%"
 
 REM * Update Source Dateien
 IF DEFINED GIT_HOME (
