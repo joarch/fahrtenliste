@@ -2,7 +2,7 @@
 REM
 REM Backup der Datenbank und Update inklusive Datenbank Migraton ausführen
 REM
-call config.cmd
+for /f "delims=" %%x in (config.txt) do (set "%%x")
 
 REM * Backup Datenbank Datei
 REM - Datum und Zeit ermitteln (https://superuser.com/a/720402)

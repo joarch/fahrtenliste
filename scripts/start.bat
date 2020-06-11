@@ -2,7 +2,7 @@
 REM
 REM Start des Programmes
 REM
-call config.cmd
+for /f "delims=" %%x in (config.txt) do (set "%%x")
 
 IF DEFINED GIT_HOME (
 cd %SOURCE_DIR%
