@@ -3,7 +3,7 @@ import os
 from django.contrib.auth.decorators import login_required
 from django.views.static import serve
 
-from administration.fahrt_admin_report import create_report_pdf
+from fahrtenliste_main.administration.fahrt_admin_report import create_report_pdf
 
 
 @login_required
