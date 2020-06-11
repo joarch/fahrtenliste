@@ -19,7 +19,7 @@ REM * Update Source Dateien
 IF DEFINED GIT_HOME (
 cd %SOURCE_DIR%
 %GIT_HOME%\bin\git pull
-%GIT_HOME%\bin\git log --oneline -n1 > ../update_1.log
+%GIT_HOME%\bin\git log  --all --oneline -n1 > ../update_1.log
 cd ..
 )
 

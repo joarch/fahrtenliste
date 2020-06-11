@@ -1,5 +1,5 @@
-Installation als Embedded Python
-- Download und Unzip "Python3.8 Embedding  Install"
+- Installation als Embedded Python
+-- Download und Unzip "Python3.8 Embedding  Install"
 -- in python3.8._pth auskommentieren von "import site"
 -- download get-pip.py von der Webseite https://pip.pypa.io/en/stable/installing/
 -- Aufruf von python get-pip.py
@@ -13,3 +13,14 @@ Installation als Embedded Python
 
 -- oder wenn das nicht geht
 --- python3.8\python.exe -m pip install reportlab
+
+- Einstellungen
+-- Umgebungsvariablen werden in setenv.bat konfiguriert
+--- Git HOME (VCS für Programmupdates)
+--- Datenbank Datei
+--- Backup Verzeichnis der Datenbank
+--- src Verzeichnis (hier liegen die Programmdateien)
+
+- Git einrichten (Sourcen auf Github)
+-- .git/config
+--- [remote "origin"] https://[key:x-oauth-basic]@github.com/joarch/fahrtenliste.git

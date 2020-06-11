@@ -1,6 +1,8 @@
 Fahrtenliste Webapplikation basierend auf Django Webframework.
 
-Starten mit start.bat (z.B. Doppelklick).
+Starten mit start.bat (Doppelklick).
+
+Update mit update_und_backup.bat (Doppelklick).
 
 Es wird ein Webserver im Hintergrund gestartet.
 
