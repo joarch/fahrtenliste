@@ -5,7 +5,6 @@ REM
 call config.cmd
 
 IF DEFINED GIT_HOME (
-echo "" >> update_1.log
 cd %SOURCE_DIR%
 %GIT_HOME%\bin\git log --oneline -n1 > ../update_2.log
 cd ..
