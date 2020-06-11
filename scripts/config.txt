@@ -1,0 +1,5 @@
+SOURCE_DIR=src
+GIT_HOME=
+
+DATENBANK=db.sqlite3
+DATENBANK_BACKUP_DIR=db_backup

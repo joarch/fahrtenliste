@@ -2,11 +2,9 @@
 REM
 REM Start des Programmes
 REM
-set SOURCE_DIR=src
-set GIT_HOME=
+for /f "delims=" %%x in (config.txt) do (set "%%x")
 
 IF DEFINED GIT_HOME (
-echo "" >> update_1.log
 cd %SOURCE_DIR%
 %GIT_HOME%\bin\git log --oneline -n1 > ../update_2.log
 cd ..

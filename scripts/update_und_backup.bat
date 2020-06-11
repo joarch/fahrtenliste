@@ -2,11 +2,7 @@
 REM
 REM Backup der Datenbank und Update inklusive Datenbank Migraton ausführen
 REM
-set SOURCE_DIR=src
-set GIT_HOME=
-
-set DATENBANK=db.sqlite3
-set DATENBANK_BACKUP_DIR=db_backup
+for /f "delims=" %%x in (config.txt) do (set "%%x")
 
 REM * Backup Datenbank Datei
 REM - Datum und Zeit ermitteln (https://superuser.com/a/720402)
