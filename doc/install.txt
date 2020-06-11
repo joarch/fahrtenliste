@@ -10,3 +10,6 @@ Installation als Embedded Python
 --- pip install python-dateutil
 --- pip install django-reversion
 --- pip install django-reversion-compare
+
+-- oder wenn das nicht geht
+--- python3.8\python.exe -m pip install reportlab
