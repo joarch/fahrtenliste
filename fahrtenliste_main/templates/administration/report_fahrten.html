@@ -14,9 +14,6 @@
     </div>
 {% endblock %}
 
-
-
-
 {% block content %}
     <style>
 
@@ -37,40 +34,40 @@
         }
 
     </script>
-     <h1 style="">{{ data.report_beschreibung }}</h1>
-        <div id="content-main">
-            <div style="display: flex; margin-top: 0px; padding-top: 0; margin-bottom: 10px">
-                <ul class="object-tools" style="margin-top: -10px">
-                    <li>
-                        <a class="" id="pdf-report" href="#" onclick="openPdfReport();"
-                           title="Report als PDF Dokument">PDF
-                            anzeigen</a>
-                    </li>
-                </ul>
-            </div>
-            <table>
-                <tr>
-                    <th>Datum</th>
-                    <th>Adresse</th>
-                    <th>Kunde</th>
-                    <th>Entfernung (km)</th>
-                </tr>
-                {% for key, fahrten in data.eindeutige_fahrten.items %}
-                    {% for fahrt in fahrten %}
-                        <tr>
-                            <td>{{ fahrt.datum }}</td>
-                            <td>{{ fahrt.adresse }}</td>
-                            <td>{{ fahrt.kunde }}</td>
-                            <td>{{ fahrt.entfernung }}</td>
-                        </tr>
-                    {% endfor %}
-                {% endfor %}
-            </table>
-            <h4 style="">Anzahl Rechnungen: {{ data.anzahl_fahrten }}</h4>
-            <h4 style="">Anzahl Kunden: {{ data.anzahl_kunden }}</h4>
-            <h4 style="">Anzahl eindeutige Adressen: {{ data.anzahl_adressen }}</h4>
-            <h4 style="font-size: medium">Insgesamt gefahrene Strecke: {{ data.summe_entfernung }} km.</h4>
-            <h4 style="font-size: medium">Entfernungspauschale: {{ data.summe_entfernung }} km
-                * {{ data.kilometerpauschale_faktor }} EUR/km = {{ data.kilometerpauschale }} EUR </h4>
+    <h1 style="">{{ data.report_beschreibung }}</h1>
+    <div id="content-main">
+        <div style="display: flex; margin-top: 0px; padding-top: 0; margin-bottom: 10px">
+            <ul class="object-tools" style="margin-top: -10px">
+                <li>
+                    <a class="" id="pdf-report" href="#" onclick="openPdfReport();"
+                       title="Report als PDF Dokument">PDF
+                        anzeigen</a>
+                </li>
+            </ul>
         </div>
+        <table>
+            <tr>
+                <th>Datum</th>
+                <th>Adresse</th>
+                <th>Kunde</th>
+                <th>Entfernung (km)</th>
+            </tr>
+            {% for key, fahrten in data.eindeutige_fahrten.items %}
+                {% for fahrt in fahrten %}
+                    <tr>
+                        <td>{{ fahrt.datum }}</td>
+                        <td>{{ fahrt.adresse }}</td>
+                        <td>{{ fahrt.kunde }}</td>
+                        <td>{{ fahrt.entfernung }}</td>
+                    </tr>
+                {% endfor %}
+            {% endfor %}
+        </table>
+        <h4 style="">Anzahl Rechnungen: {{ data.anzahl_fahrten }}</h4>
+        <h4 style="">Anzahl Kunden: {{ data.anzahl_kunden }}</h4>
+        <h4 style="">Anzahl eindeutige Adressen: {{ data.anzahl_adressen }}</h4>
+        <h4 style="font-size: medium">Insgesamt gefahrene Strecke: {{ data.summe_entfernung }} km.</h4>
+        <h4 style="font-size: medium">Entfernungspauschale: {{ data.summe_entfernung }} km
+            * {{ data.kilometerpauschale_faktor }} EUR/km = {{ data.kilometerpauschale }} EUR </h4>
+    </div>
 {% endblock %}

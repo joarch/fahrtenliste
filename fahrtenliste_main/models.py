@@ -1,5 +1,3 @@
-import locale
-
 from django.db import models
 from django.utils.html import format_html
 
@@ -22,6 +20,7 @@ class Adresse(models.Model):
         return f"{self.strasse}, {self.plz} {self.ort}"
 
     class Meta:
+        db_table = 'adresse'
         verbose_name = "Adresse"
         verbose_name_plural = " Adressen"
         ordering = ['plz']
@@ -47,7 +46,15 @@ class Kunde(models.Model):
         else:
             return f"{self.nachname}"
 
+    def str_kurz_mit_anrede(self):
+        anrede_prefix = f"{self.anrede} " if self.anrede else ""
+        if self.vorname is not None:
+            return f"{anrede_prefix}{self.vorname} {self.nachname}"
+        else:
+            return f"{anrede_prefix}{self.nachname}"
+
     class Meta:
+        db_table = 'kunde'
         verbose_name = "Kunde"
         verbose_name_plural = "  Kunden"
         ordering = ['nachname', 'vorname']
@@ -107,6 +114,7 @@ class Fahrt(models.Model):
     str_adresse_kurz.allow_tags = True
 
     class Meta:
+        db_table = 'fahrt'
         verbose_name = "Fahrt"
         verbose_name_plural = "   Fahrten"
         ordering = ['-datum', '-id', 'kommentar']
@@ -127,7 +135,7 @@ class Einstellung(models.Model):
         werte = list()
         if self.wert_date:
             werte.append(self.wert_date)
-        if self.wert_char:
+        if self.wert_char is not None:
             werte.append(self.wert_char)
         if self.wert_decimal:
             werte.append(self.wert_decimal)
@@ -137,6 +145,7 @@ class Einstellung(models.Model):
         return werte[0] if len(werte) == 1 else None
 
     class Meta:
+        db_table = 'einstellung'
         verbose_name = "Einstellung"
         verbose_name_plural = "Einstellungen"
         ordering = ['name']

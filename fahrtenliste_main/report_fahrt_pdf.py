@@ -51,7 +51,7 @@ def pdf_report(dir, report_data):
                             title="Entfernungspauschale")
     story = list()
     story.append(Paragraph('Fahrtenliste', styles['Heading1']))
-    story.append(Paragraph(report_data["name"], styles['Heading2']))
+    story.append(Paragraph(report_data["name"] or "", styles['Heading2']))
     story.append(Paragraph(report_data["report_beschreibung"], styles['Heading3']))
     t = Table(zeilen, colWidths=[80, 200, 100, 60], repeatRows=(0,))
     t.hAlign = 'LEFT'

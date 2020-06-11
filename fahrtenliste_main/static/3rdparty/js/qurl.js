@@ -1,6 +1,6 @@
 // https://github.com/ryanburnette/Qurl
 var Qurl
-    ;
+;
 
 (function () {
     'use strict';
@@ -20,11 +20,11 @@ var Qurl
             return getSearch();
         }
 
-        if (key && typeof(value) === 'undefined') {
+        if (key && typeof (value) === 'undefined') {
             return getSearch()[key];
         }
 
-        if (key && typeof(value) !== 'undefined') {
+        if (key && typeof (value) !== 'undefined') {
             return setSearch(key, value);
         }
     };
@@ -33,11 +33,15 @@ var Qurl
         return Object.keys(getSearch()).length
     };
 
+    proto.getSearch = function () {
+        return Object.keys(getSearch());
+    };
+
     function getSearch() {
         var string = window.location.search
             , pairs = []
             , obj = {}
-            ;
+        ;
 
         if (!string) {
             return obj;
@@ -49,7 +53,7 @@ var Qurl
             var pair = decodeURIComponent(p).split('=')
                 , key = pair[0]
                 , val = pair[1]
-                ;
+            ;
 
             obj[key] = val;
         });
@@ -60,12 +64,11 @@ var Qurl
     function setSearch(key, value) {
         var search = getSearch()
             , string = window.location.search
-            ;
+        ;
 
         if (value === false) {
             delete search[key];
-        }
-        else {
+        } else {
             search[key] = value;
         }
 
@@ -87,7 +90,7 @@ var Qurl
 
     function getSearchString(query) {
         var pairs = []
-            ;
+        ;
 
         Object.keys(query).forEach(function (key) {
             if (typeof query[key] === 'undefined') {
@@ -99,8 +102,7 @@ var Qurl
 
         if (pairs.length === 0) {
             return '?';
-        }
-        else {
+        } else {
             return '?' + pairs.join('&');
         }
     }

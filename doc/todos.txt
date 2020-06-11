@@ -1,11 +1,4 @@
-# migration
-- sql insert into einstellung kilometerpauschale
-- sql insert into einstellung name
-
-# Report erstellen Button als tool button a.link
-
-# Bessere Filter in der Fahrtentabelle:
-- Admin Fahrt Filter DropDown Kunde (django_admin_listfilter_dropdown)
-
-# Export und Import in CSV Datei
+# Export und Import CSV Datei
 - mit konfigurierbaren Spalten Mapping.
+
+# Anreden in Einstellungen Pflegen und im Edit Modus mit ComboBox darstellen

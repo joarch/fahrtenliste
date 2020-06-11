@@ -8,7 +8,35 @@
     <script type="application/javascript">
         $(document).ready(function () {
             initButton();
+            reloadWennZeitraumGewaehlt();
         });
+
+        /**
+         * Bei Filter mit Parameter 'zeitraum', wird die Seite erneut geladen um den Datum
+         * Filter entsprechend korrekt zu übergeben mit 'datum__year' und 'datum__month'.
+         */
+        function reloadWennZeitraumGewaehlt() {
+            if (getQueryParam("zeitraum") !== null) {
+                var url = Qurl.create();
+                var search = url.getSearch();
+                var zeitraum = getQueryParam("zeitraum").split("-");
+                var jahr = zeitraum[0];
+                var monat = zeitraum[1];
+                var href = "";
+                href += "?datum__year=" + jahr + "&datum__month=" + monat;
+                for (var i = 0; i < search.length; i++) {
+                    var param = search[i];
+                    if (startsWith(param, "datum")) {
+                        continue;
+                    }
+                    href += "&" + param + "=" + getQueryParam(param);
+                }
+                if (getQueryParam("datum__year") !== jahr || getQueryParam("datum__month") != monat ||
+                    getQueryParam("datum__day") !== null) {
+                    window.location.href = href;
+                }
+            }
+        }
 
         function initButton() {
             $('#report-button').on('click', function (e) {
@@ -23,7 +51,14 @@
 
     </script>
     <div>
-        <button id="report-button" title="Erstellt einen Report über eindeutige Fahrten im gewählten Zeitraum oder wenn kein Zeitraum gewählt wurde im aktuellen Monat.">Report erstellen</button>
+        <ul class="object-tools" style="float:left; margin-top: -16px; margin-bottom: 5px">
+            <li>
+                <a id="report-button" href="#"
+                   title="Erstellt einen Report über eindeutige Fahrten im gewählten Zeitraum oder wenn kein Zeitraum gewählt wurde im aktuellen Monat.">
+                    Report erstellen
+                </a>
+            </li>
+        </ul>
     </div>
     <br/>
     {{ block.super }}

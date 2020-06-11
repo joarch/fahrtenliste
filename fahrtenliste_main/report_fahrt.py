@@ -22,7 +22,7 @@ def get_report_data(von, bis, kilometerpauschale_faktor, name):
             "datum": fahrt.datum.strftime("%d.%m.%Y"),
             "adresse": fahrt.adresse.str_kurz() if fahrt.adresse else "",
             "entfernung": fahrt.entfernung,
-            "kunde": fahrt.kunde.str_kurz() if fahrt.kunde else "?",
+            "kunde": fahrt.kunde.str_kurz_mit_anrede() if fahrt.kunde else "?",
             "adresse_id": fahrt.adresse.id if fahrt.adresse else -1 * idx,
         }
         eindeutige_fahrten[key].append(fahrt_daten)

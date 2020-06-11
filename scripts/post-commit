@@ -1,5 +1,6 @@
 #!/bin/sh
-
+# Version.txt ins Programm als Variable einfuegen
+# wird beim Start des Programms auf der Console ausgegeben
 remote="$1"
 url="$2"
 

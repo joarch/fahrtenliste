@@ -44,3 +44,13 @@ Neue Datenbank erstellen bzw. neu aufsetzen:
 -- cd [Installations Verzeichnis]
 -- python38\python.exe src\manage.py migrate
 -- python38\python.exe src\manage.py createsuperuser
+
+Tools:
+- Git (VCS/für Programm Updates: https://git-scm.com)
+-- https://git-scm.com/download/win
+
+- Notepad++ (Text Editor)
+-- https://www.heise.de/download/product/notepad-portable-55237
+
+- beekeeperstudio (Datenbank Editor: https://www.beekeeperstudio.io/)
+--https://www.beekeeperstudio.io/download/?platform=portable
