@@ -12,7 +12,7 @@ from django.utils import formats
 from django_admin_listfilter_dropdown.filters import RelatedDropdownFilter
 from reversion_compare.admin import CompareVersionAdmin
 
-from administration.fahrt_admin_report import show_report
+from fahrtenliste_main.administration.fahrt_admin_report import show_report
 from fahrtenliste_main.models import Fahrt
 
 semaphore_fahrt_nr = Semaphore()

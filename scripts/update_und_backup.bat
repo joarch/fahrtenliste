@@ -17,11 +17,11 @@ if not exist "%DATENBANK_BACKUP_DIR%" mkdir "%DATENBANK_BACKUP_DIR%"
 cp "%DATENBANK%" "%DATENBANK_BACKUP_DIR%\%DATENBANK%_%JAHR%%MONAT%%TAG%"
 
 REM * Update Source Dateien
-cd %SOURCE_DIR%
 IF DEFINED GIT_HOME (
+cd %SOURCE_DIR%
 %GIT_HOME%\bin\git pull
-) ELSE (
-git pull
+%GIT_HOME%\bin\git log --oneline -n1 > ../update_1.log
+cd ..
 )
 
 REM Start Django Migraton

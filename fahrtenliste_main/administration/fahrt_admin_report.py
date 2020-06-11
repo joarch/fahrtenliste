@@ -4,10 +4,10 @@ from datetime import datetime
 from django.conf import settings
 from django.shortcuts import render
 
-from einstellung import get_einstellung
+from fahrtenliste_main.einstellung import get_einstellung
 from fahrtenliste_main.datum_util import get_jahr_von_bis, get_monat_von_bis
 from fahrtenliste_main.report_fahrt import get_report_data
-from report_fahrt_pdf import pdf_report
+from fahrtenliste_main.report_fahrt_pdf import pdf_report
 
 
 def _get_temp_dir():
