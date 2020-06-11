@@ -4,9 +4,6 @@ REM Backup der Datenbank und Update inklusive Datenbank Migraton ausführen
 REM
 call config.cmd
 
-set DATENBANK=db.sqlite3
-set DATENBANK_BACKUP_DIR=db_backup
-
 REM * Backup Datenbank Datei
 REM - Datum und Zeit ermitteln (https://superuser.com/a/720402)
 for /f "tokens=2 delims==" %%G in ('wmic os get localdatetime /value') do set datetime=%%G
