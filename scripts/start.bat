@@ -2,8 +2,7 @@
 REM
 REM Start des Programmes
 REM
-set SOURCE_DIR=src
-set GIT_HOME=
+call config.cmd
 
 IF DEFINED GIT_HOME (
 echo "" >> update_1.log
