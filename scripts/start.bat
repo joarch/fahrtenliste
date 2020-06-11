@@ -1,4 +1,9 @@
-GIT_HOME=
+@echo off
+REM
+REM Start des Programmes
+REM
+set SOURCE_DIR=src
+set GIT_HOME=
 
 IF DEFINED GIT_HOME (
 echo "" >> update_1.log
@@ -11,9 +16,14 @@ if errorlevel 1 goto UPDATE
 
 goto START
 :UPDATE
-echo "Es steht ein neues Programm Update zur Verfügung:"
+echo "**********************************************************"
+echo "Es steht ein neues Programm Update zur Verfügung"
+echo "---------------------------------------------------------"
+echo "Details:"
 type update_2.log
+echo "---------------------------------------------------------"
 echo "Das Update kann mit dem Update Skript eingespielt werden."
+echo "*********************************************************"
 pause
 
 :START
