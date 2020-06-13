@@ -17,6 +17,13 @@ def _get_temp_dir():
     return temp_dir
 
 
+def get_von_bis_aus_request(request):
+    tag = _param_to_int(request, "datum__day")
+    monat = _param_to_int(request, "datum__month")
+    jahr = _param_to_int(request, "datum__year")
+    return _get_zeitraum_von_bis(tag, monat, jahr)
+
+
 def create_report_pdf(request):
     tag = _param_to_int(request, "datum__day")
     monat = _param_to_int(request, "datum__month")

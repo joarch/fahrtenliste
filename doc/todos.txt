@@ -1,4 +1,6 @@
-# Export und Import CSV Datei
-- mit konfigurierbaren Spalten Mapping.
+# Export und Import Excel
+- adresse import
+- kunden import
+- fahrt import
 
 # Anreden in Einstellungen Pflegen und im Edit Modus mit ComboBox darstellen

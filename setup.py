@@ -46,7 +46,8 @@ setup(
                       "python-dateutil",
                       "django-reversion",
                       "django-reversion-compare",
-                      "reportlab"
+                      "reportlab",
+                      "openpyxl<=3.0.0"
                       ],
     # extras_require={
     #    'sphinx'
