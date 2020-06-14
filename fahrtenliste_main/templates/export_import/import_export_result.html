@@ -1,0 +1,45 @@
+{% extends "admin/base_site.html" %}
+
+{% block content %}
+    <a style="position: absolute;top: 0" name="top"></a>
+    <h1>Import Protokoll</h1>
+    <h2>Input:</h2>
+    <ul>
+        <li>Datum: {{ timestamp }}
+        <li>Datei: {{ filename }}
+        <li>Format: {{ format }}
+        <li>Beschreibung: {{ beschreibung }}
+        <li>Import Dauer: {{ import_dauer }}
+        <li>Simulation: {{ simulation }}
+    </ul>
+    <h2><a name="neu">Neu</a> ({{ neu|length }}):<a href="#top">^</a></h2>
+    <ul>
+        {% for l in neu_artikel %}
+            <li>{{ l | safe }}
+        {% endfor %}
+    </ul>
+    <h2><a name="geaendert">Geändert</a> ({{ geaendert|length }}):<a href="#top">^</a></h2>
+    <ul>
+        {% for l in geaendert %}
+            <li>{{ l | safe }}
+        {% endfor %}
+    </ul>
+    <h2><a name="geloescht">Gelöscht</a> ({{ geloescht|length }}):<a href="#top">^</a></h2>
+    <ul>
+        {% for l in geloescht %}
+            <li>{{ l | safe }}
+        {% endfor %}
+    </ul>
+    <h2><a name="unveraendert">Unverändert</a> ({{ unveraendert|length }}):<a href="#top">^</a></h2>
+    <ul>
+        {% for l in unveraendert %}
+            <li>{{ l | safe }}
+        {% endfor %}
+    </ul>
+    <h2><a name="warnung">Warnung</a> ({{ warnung|length }}):<a href="#top">^</a></h2>
+    <ul>
+        {% for l in warnung %}
+            <li>{{ l | safe }}
+        {% endfor %}
+    </ul>
+{% endblock %}

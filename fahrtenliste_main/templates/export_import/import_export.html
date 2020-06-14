@@ -1,0 +1,117 @@
+{% extends "admin/base_site.html" %}
+{% load i18n admin_urls static admin_list %}
+
+{% load static %}
+{% load fahrtenliste_main_extras %}
+
+{% block content %}
+
+    <style>
+        a:hover,
+        a:focus {
+            color: #722040;
+        }
+
+        .inputfile {
+            width: 0.1px;
+            height: 0.1px;
+            opacity: 0;
+            overflow: hidden;
+            position: absolute;
+            z-index: -1;
+        }
+
+        .inputfile + label {
+            max-width: 80%;
+            font-size: 1.25rem;
+            /* 20px */
+            font-weight: 700;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            cursor: pointer;
+            display: inline-block;
+            overflow: hidden;
+            /* 10px 20px */
+        }
+
+        .inputfile:focus + label,
+        .inputfile.has-focus + label {
+            outline: 1px dotted #000;
+            outline: -webkit-focus-ring-color auto 5px;
+        }
+
+        .inputfile + label * {
+            /* pointer-events: none; */
+            /* in case of FastClick lib use */
+        }
+
+        .inputfile-1 + label {
+            color: #d3394c;
+        }
+
+        .inputfile-1:focus + label,
+        .inputfile-1.has-focus + label,
+        .inputfile-1 + label:hover {
+            color: #722040;
+        }
+
+    </style>
+
+    <script type="text/javascript" src="{% static "3rdparty/js/jquery-3.2.1.min.js" %}?{% programmversion %}"></script>
+
+    <h1>Import Adressen</h1>
+
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div>
+            <div>
+                <!-- https://tympanus.net/Tutorials/CustomFileInputs/ -->
+                <input id="file" type="file" name="file" accept=".xlsx" class="inputfile inputfile-1"/>
+                <label for="file"><span>Datei auswählen...</span></label>
+            </div>
+            <div>
+                Format: <select name="format">
+                <!-- TODO aus import_adressen verwenden -->
+                <option value="fahrtenliste">Fahrtenliste (Standard)</option>
+            </select>
+            </div>
+            <input id="dry_run" name="dry_run" type="checkbox" checked>Simulation</input>
+            <div>
+                <button type="submit">Import</button>
+            </div>
+        </div>
+    </form>
+
+    <script>
+        $(document).ready(function () {
+            var inputs = document.querySelectorAll('.inputfile');
+            Array.prototype.forEach.call(inputs, function (input) {
+                var label = input.nextElementSibling,
+                    labelVal = label.innerHTML;
+
+                input.addEventListener('change', function (e) {
+                    var fileName = '';
+                    if (this.files && this.files.length > 1)
+                        fileName = (this.getAttribute('data-multiple-caption') || '').replace('{count}', this.files.length);
+                    else
+                        fileName = e.target.value.split('\\').pop();
+
+                    if (fileName)
+                        label.querySelector('span').innerHTML = fileName;
+                    else
+                        label.innerHTML = labelVal;
+                });
+
+                // Firefox bug fix
+                input.addEventListener('focus', function () {
+                    input.classList.add('has-focus');
+                });
+                input.addEventListener('blur', function () {
+                    input.classList.remove('has-focus');
+                });
+            });
+        });
+    </script>
+
+
+{% endblock %}

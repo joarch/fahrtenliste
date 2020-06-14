@@ -12,10 +12,11 @@ from django.utils import formats
 from django_admin_listfilter_dropdown.filters import RelatedDropdownFilter
 from reversion_compare.admin import CompareVersionAdmin
 
+from administration.historisch import str_kunde_historisch, str_adresse_historisch
 from fahrtenliste_main.administration.fahrt_admin_report import get_von_bis_aus_request
 from fahrtenliste_main.administration.fahrt_admin_report import show_report
-from fahrtenliste_main.export.export import serve_export
-from fahrtenliste_main.export.export_fahrt import export_fahrten
+from fahrtenliste_main.export_import.export_fahrt import export_fahrten
+from fahrtenliste_main.export_import.exports import serve_export
 from fahrtenliste_main.models import Fahrt
 
 semaphore_fahrt_nr = Semaphore()
@@ -96,12 +97,12 @@ class FahrtAdminForm(forms.ModelForm):
 class FahrtAdmin(CompareVersionAdmin):
     change_list_template = "administration/fahrt_admin_change_list.html"
     list_display = ('fahrt_nr', 'datum', 'kunde_kurz', 'adresse_kurz', 'str_entfernung')
-    list_display_links = ('fahrt_nr', 'datum', 'kunde_kurz')
+    list_display_links = ('fahrt_nr', 'datum')
     search_fields = ('kommentar',
                      'kunde__nachname', 'kunde__vorname',
                      'adresse__strasse', 'adresse__plz', 'adresse__ort',)
-    readonly_fields = ('id',)
     date_hierarchy = 'datum'
+    readonly_fields = ('id', 'kunde_historisch', 'adresse_historisch')
     list_filter = (FahrtMonatFilter, ('adresse', RelatedDropdownFilter), ('kunde', RelatedDropdownFilter),)
     autocomplete_fields = ['kunde', 'adresse']
     form = FahrtAdminForm
@@ -109,6 +110,8 @@ class FahrtAdmin(CompareVersionAdmin):
     def kunde_kurz(self, obj):
         if obj.kunde is not None:
             return f"{obj.kunde.str_kurz()}"
+        if obj.kunde_historisch is not None:
+            return str_kunde_historisch(obj.kunde_historisch)
         return ""
 
     kunde_kurz.admin_order_field = 'kunde__nachname'
@@ -121,16 +124,23 @@ class FahrtAdmin(CompareVersionAdmin):
     str_entfernung.short_description = 'Entfernung (km)'
 
     def adresse_kurz(self, obj):
-        return obj.str_adresse_kurz()
+        if obj.adresse is not None:
+            return obj.adresse.str_kurz_abweichende_entfernung(obj.entfernung)
+        if obj.adresse_historisch is not None:
+            return str_adresse_historisch(obj.adresse_historisch, obj.entfernung)
+        return ""
 
     adresse_kurz.admin_order_field = 'adresse__strasse'
     adresse_kurz.short_description = 'Adresse'
 
     def get_readonly_fields(self, request, obj=None):
         if obj is None:
-            return ['adresse', 'entfernung']
+            readonly_fields = list()
+            readonly_fields.extend(['adresse', 'entfernung'])
+            readonly_fields.extend(self.readonly_fields)
+            return readonly_fields
         else:
-            return []
+            return self.readonly_fields
 
     def save_model(self, request, obj, form, change):
         if obj.kunde is not None and obj.kunde.adresse is not None:

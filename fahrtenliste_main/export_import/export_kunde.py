@@ -2,10 +2,11 @@ from collections import namedtuple
 
 from django.forms import model_to_dict
 
-from fahrtenliste_main.export.export import export_nach_excel, none_mapping
+from fahrtenliste_main.export_import.exports import export_nach_excel, none_mapping
 
 Kunde_tuple = namedtuple('adresse',
-                         ['anrede',
+                         ['id',
+                          'anrede',
                           'vorname',
                           'nachname',
                           'adresse']
@@ -23,10 +24,12 @@ def export_kunden(kunden):
         kunden_data.append(kunde_data)
 
     mappings = {
+        "id": none_mapping,
         "anrede": none_mapping,
         "vorname": none_mapping,
         "nachname": none_mapping,
         "adresse": none_mapping
     }
 
-    return export_nach_excel(Kunde_tuple, "", kunden_data, mappings=mappings, export_name="Kunden")
+    return export_nach_excel(Kunde_tuple, "", kunden_data, mappings=mappings, export_name="Kunden",
+                             filename_postfix="Fahrtenliste")

@@ -2,10 +2,11 @@ from collections import namedtuple
 
 from django.forms import model_to_dict
 
-from fahrtenliste_main.export.export import export_nach_excel, none_mapping
+from fahrtenliste_main.export_import.exports import export_nach_excel, none_mapping
 
 Fahrt_tuple = namedtuple('fahrt',
-                         ['fahrt_nr',
+                         ['id',
+                          'fahrt_nr',
                           'datum',
                           'adresse',
                           'kunde',
@@ -30,6 +31,7 @@ def export_fahrten(von, bis, fahrten):
     detailname = "Zeitraum: {} bis {}".format(von.strftime("%d.%m.%Y"), bis.strftime("%d.%m.%Y"))
 
     mappings = {
+        "id": none_mapping,
         "fahrt_nr": none_mapping,
         "adresse": none_mapping,
         "kunde": none_mapping,
@@ -39,4 +41,5 @@ def export_fahrten(von, bis, fahrten):
         "konto": none_mapping,
         "kommentar": none_mapping
     }
-    return export_nach_excel(Fahrt_tuple, detailname, fahrten_data, mappings=mappings, export_name="Fahrten")
+    return export_nach_excel(Fahrt_tuple, detailname, fahrten_data, mappings=mappings, export_name="Fahrten",
+                             filename_postfix="Fahrtenliste")

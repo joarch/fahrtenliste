@@ -1,6 +1,8 @@
 {% extends "admin/base_site.html" %}
 {% load i18n admin_urls static admin_list %}
 
+{% load fahrtenliste_main_extras %}
+
 {% block title %}Fahrtenliste | Report{% endblock %}
 
 {% block branding %}
@@ -18,9 +20,9 @@
     <style>
 
     </style>
-    <script type="text/javascript" src="{% static "3rdparty/js/jquery-3.2.1.min.js" %}"></script>
-    <script type="text/javascript" src="{% static "3rdparty/js/qurl.js" %}"></script>
-    <script type="text/javascript" src="{% static "js/common.js" %}"></script>
+    <script type="text/javascript" src="{% static "3rdparty/js/jquery-3.2.1.min.js" %}?{% programmversion %}"></script>
+    <script type="text/javascript" src="{% static "3rdparty/js/qurl.js" %}?{% programmversion %}"></script>
+    <script type="text/javascript" src="{% static "js/common.js" %}?{% programmversion %}"></script>
     <script type="application/javascript">
         $(document).ready(function () {
         });
