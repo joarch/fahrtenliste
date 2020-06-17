@@ -1,5 +1,5 @@
 # Export und Import Excel
-export mit id in der ersten spalte, wenn gegeben, dann update durchführen
+export mit historischen Daten
 
 - adresse import
 - kunden import

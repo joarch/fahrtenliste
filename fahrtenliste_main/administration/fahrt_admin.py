@@ -12,7 +12,7 @@ from django.utils import formats
 from django_admin_listfilter_dropdown.filters import RelatedDropdownFilter
 from reversion_compare.admin import CompareVersionAdmin
 
-from administration.historisch import str_kunde_historisch, str_adresse_historisch
+from fahrtenliste_main.historisch import str_kunde_historisch, str_adresse_historisch
 from fahrtenliste_main.administration.fahrt_admin_report import get_von_bis_aus_request
 from fahrtenliste_main.administration.fahrt_admin_report import show_report
 from fahrtenliste_main.export_import.export_fahrt import export_fahrten

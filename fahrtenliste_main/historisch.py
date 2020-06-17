@@ -54,7 +54,7 @@ def str_adresse_historisch(adresse_historisch_data, entfernung=None, as_html=Tru
             return "Adresse gelöscht"
 
 
-def adresse_entfernung_historisch(adresse_historisch_data, as_html=True):
+def str_adresse_entfernung_historisch(adresse_historisch_data, as_html=True):
     try:
         data_dict = json.loads(adresse_historisch_data)
         adresse_historisch = Adresse(**data_dict["fields"])

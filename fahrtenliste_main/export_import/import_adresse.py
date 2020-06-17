@@ -3,7 +3,7 @@ import os
 
 import reversion
 
-from export_import.excel import is_empty_value
+from fahrtenliste_main.export_import.excel import is_empty_value
 from fahrtenliste_main.export_import.imports import import_von_excel
 from fahrtenliste_main.models import Adresse
 from fahrtenliste_main.temp_dir import get_tempdir
@@ -31,7 +31,7 @@ IMPORT_FORMATE_ADRESSE = {
 }
 
 
-def do_import_artikel(user, file, format_key, dry_run=True):
+def do_import_adressen(user, file, format_key, dry_run=True):
     import_format = IMPORT_FORMATE_ADRESSE.get(format_key)
     if import_format is None:
         raise RuntimeError(f"Unbekanntes Import Format '{format_key}'!")
@@ -39,10 +39,10 @@ def do_import_artikel(user, file, format_key, dry_run=True):
     with reversion.create_revision():
         reversion.set_user(user)
         reversion.set_comment("Import Artikel ({}): {}".format(import_format["name"], file.name))
-        return _import_artikel(user, file, import_format, dry_run)
+        return _import_adressen(user, file, import_format, dry_run)
 
 
-def _import_artikel(user, file, import_format, dry_run, tempfile_mit_timestamp=False):
+def _import_adressen(user, file, import_format, dry_run, tempfile_mit_timestamp=False):
     neu = list()
     geloescht = list()
     geaendert = list()
@@ -71,24 +71,32 @@ def _import_artikel(user, file, import_format, dry_run, tempfile_mit_timestamp=F
 
     # alle Adressen ohne Id Spalte (in der Regel neue Adressen)
     for adresse_source in adressen_source_ohne_id:
-        key = _key(adressen_source["strasse"], adressen_source["plz"], adressen_source["ort"])
+        key = _key(adresse_source["strasse"], adresse_source["plz"], adresse_source["ort"])
         adresse_destination = adressen_destination_by_key.get(key)
         if adresse_destination is None:
-            _neue_adresse(adresse_destination, neu)
+            _neue_adresse(adresse_source, neu, dry_run)
         elif adresse_destination is not None:
             adressen_in_source.append(adresse_destination)
-            _check_aenderung(adresse_source, adresse_destination, geaendert, unveraendert)
+            _check_aenderung(adresse_source, adresse_destination, geaendert, unveraendert, dry_run)
 
     # alle Adressen mit Id Spalte
     for id, adresse_source in adressen_source_by_id.items():
+        # Suche mit Id
         adresse_destination = adressen_destination_by_id.get(id)
+
         if adresse_destination is None:
-            neu.append(Adresse)
+            # wenn nicht über Id gefunden Suchen über Key (Strasse, PLZ und Ort)
+            key = _key(adresse_source["strasse"], adresse_source["plz"], adresse_source["ort"])
+            adresse_destination = adressen_destination_by_key.get(key)
+
+        if adresse_destination is None:
+            _neue_adresse(adresse_source, neu, dry_run)
         elif adresse_destination is not None:
             adressen_in_source.append(adresse_destination)
-            _check_aenderung(adresse_source, adresse_destination, geaendert, unveraendert)
+            _check_aenderung(adresse_source, adresse_destination, geaendert, unveraendert, dry_run)
 
-    # Warnungen bei Adressen, die nicht mehr in der Liste stehen (kein Löschen)
+    # Warnungen bei Adressen, die nicht mehr in der Liste stehen
+    # Hinweis: es werden keine Adressen automatisch gelöscht
     for id, adresse_destination in adressen_destination_by_id.items():
         if adresse_destination not in adressen_in_source:
             warnung.append(f"fehlt im Import: {_adresse_mit_link(adresse_destination)}")
@@ -107,14 +115,15 @@ def _import_artikel(user, file, import_format, dry_run, tempfile_mit_timestamp=F
     }
 
 
-def _neue_adresse(adresse_source, neu):
+def _neue_adresse(adresse_source, neu, dry_run):
     adresse_destination = Adresse(strasse=adresse_source['strasse'], plz=adresse_source['plz'],
                                   ort=adresse_source['ort'], entfernung=adresse_source['entfernung'])
-    adresse_destination.save()
+    if not dry_run:
+        adresse_destination.save()
     neu.append(f"{_adresse_mit_link(adresse_destination)}")
 
 
-def _check_aenderung(adresse_source, adresse_destination, geaendert, unveraendert):
+def _check_aenderung(adresse_source, adresse_destination, geaendert, unveraendert, dry_run):
     aenderung = list()
     if adresse_destination.strasse != adresse_source["strasse"]:
         aenderung.append(f"- Straße: alt='{adresse_destination.stasse}', neu='{adresse_source['strasse']}'")
@@ -133,7 +142,8 @@ def _check_aenderung(adresse_source, adresse_destination, geaendert, unveraender
     if len(aenderung) > 0:
         aenderung_detail = "\n".join(aenderung)
         geaendert.append(f"{_adresse_mit_link(adresse_destination)}\n{aenderung_detail}")
-        adresse_destination.save()
+        if not dry_run:
+            adresse_destination.save()
     else:
         unveraendert.append(f"{_adresse_mit_link(adresse_destination)}")
 
@@ -144,5 +154,5 @@ def _key(strasse, plz, ort):
 
 def _adresse_mit_link(adresse):
     url = f"/admin/fahrtenliste_main/adresse/{adresse.id}/change"
-    link = f"<a target='_blank' href='{url}'>{adresse.str_kurz()}</a>"
+    link = f"<a target='_blank' href='{url}'>{adresse}</a>"
     return link

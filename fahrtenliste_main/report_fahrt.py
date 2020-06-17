@@ -3,6 +3,7 @@ from collections import defaultdict
 from datetime import datetime
 
 from fahrtenliste_main.models import Fahrt
+from fahrtenliste_main.historisch import str_kunde_historisch, str_adresse_historisch
 
 
 def get_report_data(von, bis, kilometerpauschale_faktor, name):
@@ -18,11 +19,12 @@ def get_report_data(von, bis, kilometerpauschale_faktor, name):
         key = "{}:{}:{}".format(fahrt.datum.strftime("%Y-%m-%d"),
                                 fahrt.adresse.str_kurz() if fahrt.adresse else str(-1 * idx),
                                 fahrt.entfernung)
+
         fahrt_daten = {
             "datum": fahrt.datum.strftime("%d.%m.%Y"),
-            "adresse": fahrt.adresse.str_kurz() if fahrt.adresse else "",
+            "adresse": _str_adresse(fahrt),
             "entfernung": fahrt.entfernung,
-            "kunde": fahrt.kunde.str_kurz_mit_anrede() if fahrt.kunde else "?",
+            "kunde": _str_kunde(fahrt),
             "adresse_id": fahrt.adresse.id if fahrt.adresse else -1 * idx,
         }
         eindeutige_fahrten[key].append(fahrt_daten)
@@ -57,3 +59,19 @@ def get_report_data(von, bis, kilometerpauschale_faktor, name):
         "kilometerpauschale": kilometerpauschale,
         "report_erstellt": datetime.today()
     }
+
+
+def _str_kunde(fahrt):
+    if fahrt.kunde:
+        return fahrt.kunde.str_kurz_mit_anrede()
+    if fahrt.kunde_historisch:
+        return str_kunde_historisch(fahrt.kunde_historisch, as_html=False)
+    return ""
+
+
+def _str_adresse(fahrt):
+    if fahrt.adresse:
+        return fahrt.adresse.str_kurz()
+    if fahrt.adresse_historisch:
+        return str_adresse_historisch(fahrt.adresse_historisch, as_html=False)
+    return ""

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Diagram>
+  <ID>DATABASE</ID>
+  <OriginalElement>9e81a32e-d073-4080-a75f-356e1e5e29e0.TABLE:main.adresse</OriginalElement>
+  <nodes>
+    <node x="689.9401511287548" y="0.0">9e81a32e-d073-4080-a75f-356e1e5e29e0.TABLE:main.einstellung</node>
+    <node x="0.0" y="0.0">9e81a32e-d073-4080-a75f-356e1e5e29e0.TABLE:main.kunde</node>
+    <node x="476.9401511287548" y="218.14971948304583">9e81a32e-d073-4080-a75f-356e1e5e29e0.TABLE:main.adresse</node>
+    <node x="47.865297473301666" y="505.02280807753556">9e81a32e-d073-4080-a75f-356e1e5e29e0.TABLE:main.fahrt</node>
+  </nodes>
+  <notes />
+  <edges>
+    <edge source="9e81a32e-d073-4080-a75f-356e1e5e29e0.TABLE:main.kunde" target="9e81a32e-d073-4080-a75f-356e1e5e29e0.TABLE:main.adresse">
+      <point x="0.0" y="0.0" />
+      <point x="0.0" y="0.0" />
+    </edge>
+    <edge source="9e81a32e-d073-4080-a75f-356e1e5e29e0.TABLE:main.fahrt" target="9e81a32e-d073-4080-a75f-356e1e5e29e0.TABLE:main.adresse">
+      <point x="0.0" y="0.0" />
+      <point x="0.0" y="0.0" />
+    </edge>
+    <edge source="9e81a32e-d073-4080-a75f-356e1e5e29e0.TABLE:main.fahrt" target="9e81a32e-d073-4080-a75f-356e1e5e29e0.TABLE:main.kunde">
+      <point x="0.0" y="0.0" />
+      <point x="0.0" y="0.0" />
+    </edge>
+  </edges>
+  <settings layout="Circular" zoom="0.8370927318295739" x="438.5" y="389.0" />
+  <SelectedNodes>
+    <node>9e81a32e-d073-4080-a75f-356e1e5e29e0.TABLE:main.adresse</node>
+  </SelectedNodes>
+  <Categories>
+    <Category>Key columns</Category>
+    <Category>Columns</Category>
+    <Category>Virtual foreign keys</Category>
+  </Categories>
+</Diagram>
+
