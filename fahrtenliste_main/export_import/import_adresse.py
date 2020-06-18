@@ -1,19 +1,17 @@
 import datetime
-import os
 
 import reversion
 
 from fahrtenliste_main.export_import.excel import is_empty_value
 from fahrtenliste_main.export_import.imports import import_von_excel
 from fahrtenliste_main.models import Adresse
-from fahrtenliste_main.temp_dir import get_tempdir
-from fahrtenliste_main.temp_dir import get_timestamp
+from fahrtenliste_main.temp_dir import write_to_temp_file
 
 IMPORT_FORMAT_ADRESSE_STANDARD = {
     "id": "fahrtenliste",
-    "typ": "Adressen",
-    "name": "Fahrtenliste",
-    "beschreibung": "Fahrtenliste Standard Format",
+    "typ": "Adresse",
+    "name": "Fahrtenliste Adresse",
+    "beschreibung": "Fahrtenliste Standard Format Adresse",
     "filemuster": "Fahrtenliste_Adressen_.*\\.xlsx",
     "start_row": 2,
     "columns":
@@ -38,7 +36,7 @@ def do_import_adressen(user, file, format_key, dry_run=True):
 
     with reversion.create_revision():
         reversion.set_user(user)
-        reversion.set_comment("Import Artikel ({}): {}".format(import_format["name"], file.name))
+        reversion.set_comment("Import Adresse ({}): {}".format(import_format["name"], file.name))
         return _import_adressen(user, file, import_format, dry_run)
 
 
@@ -50,14 +48,7 @@ def _import_adressen(user, file, import_format, dry_run, tempfile_mit_timestamp=
     warnung = list()
     adressen_in_source = list()
 
-    filename, file_extension = os.path.splitext(file.name)
-    temp_dir = get_tempdir(user)
-    timestamp = get_timestamp() if tempfile_mit_timestamp else ""
-    temp_file = "{}_{}{}".format(filename, timestamp, file_extension)
-    temp_file_path = os.path.join(temp_dir, temp_file)
-    with open(temp_file_path, 'wb+') as destination:
-        for chunk in file.chunks():
-            destination.write(chunk)
+    temp_file_path = write_to_temp_file(user, file, tempfile_mit_timestamp)
 
     adressen_source = import_von_excel(temp_file_path, import_format)
 
@@ -67,17 +58,17 @@ def _import_adressen(user, file, import_format, dry_run, tempfile_mit_timestamp=
 
     adressen_destination = Adresse.objects.filter()
     adressen_destination_by_id = {a.id: a for a in adressen_destination}
-    adressen_destination_by_key = {_key(a.strasse, a.plz, a.ort): a for a in adressen_destination}
+    adressen_destination_by_key = {adresse_key(a.strasse, a.plz, a.ort): a for a in adressen_destination}
 
     # alle Adressen ohne Id Spalte (in der Regel neue Adressen)
     for adresse_source in adressen_source_ohne_id:
-        key = _key(adresse_source["strasse"], adresse_source["plz"], adresse_source["ort"])
+        key = adresse_key(adresse_source["strasse"], adresse_source["plz"], adresse_source["ort"])
         adresse_destination = adressen_destination_by_key.get(key)
         if adresse_destination is None:
-            _neue_adresse(adresse_source, neu, dry_run)
-        elif adresse_destination is not None:
+            neue_adresse(adresse_source, neu, dry_run)
+        else:
             adressen_in_source.append(adresse_destination)
-            _check_aenderung(adresse_source, adresse_destination, geaendert, unveraendert, dry_run)
+            check_aenderung_adresse(adresse_source, adresse_destination, geaendert, unveraendert, dry_run)
 
     # alle Adressen mit Id Spalte
     for id, adresse_source in adressen_source_by_id.items():
@@ -86,20 +77,20 @@ def _import_adressen(user, file, import_format, dry_run, tempfile_mit_timestamp=
 
         if adresse_destination is None:
             # wenn nicht über Id gefunden Suchen über Key (Strasse, PLZ und Ort)
-            key = _key(adresse_source["strasse"], adresse_source["plz"], adresse_source["ort"])
+            key = adresse_key(adresse_source["strasse"], adresse_source["plz"], adresse_source["ort"])
             adresse_destination = adressen_destination_by_key.get(key)
 
         if adresse_destination is None:
-            _neue_adresse(adresse_source, neu, dry_run)
-        elif adresse_destination is not None:
+            neue_adresse(adresse_source, neu, dry_run)
+        else:
             adressen_in_source.append(adresse_destination)
-            _check_aenderung(adresse_source, adresse_destination, geaendert, unveraendert, dry_run)
+            check_aenderung_adresse(adresse_source, adresse_destination, geaendert, unveraendert, dry_run)
 
     # Warnungen bei Adressen, die nicht mehr in der Liste stehen
     # Hinweis: es werden keine Adressen automatisch gelöscht
     for id, adresse_destination in adressen_destination_by_id.items():
         if adresse_destination not in adressen_in_source:
-            warnung.append(f"fehlt im Import: {_adresse_mit_link(adresse_destination)}")
+            warnung.append(f"fehlt im Import: {adresse_mit_link(adresse_destination)}")
 
     return {
         "format": "{}".format(import_format["name"]),
@@ -115,44 +106,45 @@ def _import_adressen(user, file, import_format, dry_run, tempfile_mit_timestamp=
     }
 
 
-def _neue_adresse(adresse_source, neu, dry_run):
+def neue_adresse(adresse_source, neu, dry_run):
     adresse_destination = Adresse(strasse=adresse_source['strasse'], plz=adresse_source['plz'],
                                   ort=adresse_source['ort'], entfernung=adresse_source['entfernung'])
     if not dry_run:
         adresse_destination.save()
-    neu.append(f"{_adresse_mit_link(adresse_destination, dry_run)}")
+    neu.append(f"Adresse: {adresse_mit_link(adresse_destination, dry_run)}")
+    return adresse_destination
 
 
-def _check_aenderung(adresse_source, adresse_destination, geaendert, unveraendert, dry_run):
+def check_aenderung_adresse(adresse_source, adresse_destination, geaendert, unveraendert, dry_run):
     aenderung = list()
     if adresse_destination.strasse != adresse_source["strasse"]:
-        aenderung.append(f"- Straße: alt='{adresse_destination.stasse}', neu='{adresse_source['strasse']}'")
+        aenderung.append(f"Straße: alt='{adresse_destination.stasse}', neu='{adresse_source['strasse']}'")
         adresse_destination.strasse = adresse_source['strasse']
-    if adresse_destination.plz != adresse_source["plz"]:
-        aenderung.append(f"- Plz: alt='{adresse_destination.plz}', neu='{adresse_source['plz']}'")
+    if str(adresse_destination.plz) != str(adresse_source["plz"]):
+        aenderung.append(f"Plz: alt='{adresse_destination.plz}', neu='{adresse_source['plz']}'")
         adresse_destination.plz = adresse_source['plz']
     if adresse_destination.ort != adresse_source["ort"]:
-        aenderung.append(f"- Ort: alt='{adresse_destination.ort}', neu='{adresse_source['ort']}'")
+        aenderung.append(f"Ort: alt='{adresse_destination.ort}', neu='{adresse_source['ort']}'")
         adresse_destination.ort = adresse_source['ort']
-    if adresse_destination.entfernung != adresse_source["entfernung"]:
+    if str(adresse_destination.entfernung) != str(adresse_source["entfernung"]):
         aenderung.append(
-            f"- Entfernung: alt='{adresse_destination.entfernung}', neu='{adresse_source['entfernung']}'")
+            f"Entfernung: alt='{adresse_destination.entfernung}', neu='{adresse_source['entfernung']}'")
         adresse_destination.entfernung = adresse_source['entfernung']
 
     if len(aenderung) > 0:
-        aenderung_detail = "\n".join(aenderung)
-        geaendert.append(f"{_adresse_mit_link(adresse_destination)}\n{aenderung_detail}")
+        aenderung_detail = "; ".join(aenderung)
+        geaendert.append(f"Adresse: {adresse_mit_link(adresse_destination)}; {aenderung_detail}")
         if not dry_run:
             adresse_destination.save()
     else:
-        unveraendert.append(f"{_adresse_mit_link(adresse_destination)}")
+        unveraendert.append(f"Adresse: {adresse_mit_link(adresse_destination)}")
 
 
-def _key(strasse, plz, ort):
-    return f"{strasse} {plz} {ort}"
+def adresse_key(strasse, plz, ort):
+    return f"{strasse if strasse else ''} {plz if plz else ''} {ort if ort else ''}".strip()
 
 
-def _adresse_mit_link(adresse, ohne_link=False):
+def adresse_mit_link(adresse, ohne_link=False):
     if ohne_link:
         return str(adresse)
     url = f"/admin/fahrtenliste_main/adresse/{adresse.id}/change"

@@ -1,4 +1,5 @@
 import json
+import logging
 
 from dateutil.parser import parse
 from django.core.exceptions import ObjectDoesNotExist
@@ -67,8 +68,27 @@ def str_adresse_entfernung_historisch(adresse_historisch_data, as_html=True):
         else:
             return adresse_historisch.str_kurz()
     except:
+        logging.exception('')
         if as_html:
             title = "Fehler beim Lesen der gelöschten Adresse aus dem Feld 'Adresse Historie'"
             return format_html(f"<span style='color: red' title='{title}'>Adresse gelöscht</span>")
         else:
             return "Adresse gelöscht"
+
+
+def to_adresse_historisch(adresse_historisch_data):
+    try:
+        data_dict = json.loads(adresse_historisch_data)
+        return Adresse(**data_dict["fields"])
+    except:
+        logging.exception('')
+        return None
+
+
+def to_kunde_historisch(kunde_historisch_data):
+    try:
+        data_dict = json.loads(kunde_historisch_data)
+        return Kunde(**data_dict["fields"])
+    except:
+        logging.exception('')
+        return None

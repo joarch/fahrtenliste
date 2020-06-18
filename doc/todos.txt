@@ -1,5 +1,4 @@
 # Import Excel
-- adresse import
 - kunden import
 - fahrt import
 

@@ -59,7 +59,7 @@
 
     <script type="text/javascript" src="{% static "3rdparty/js/jquery-3.2.1.min.js" %}?{% programmversion %}"></script>
 
-    <h1>Import Adressen</h1>
+    <h1>Import {{ model_objekt_name }}</h1>
 
     <form method="post" enctype="multipart/form-data">
         {% csrf_token %}
@@ -76,6 +76,7 @@
             </select>
             </div>
             <input id="dry_run" name="dry_run" type="checkbox" checked>Simulation</input>
+            <input id="typ" name="typ" type="hidden" value="{{ typ }}"/>
             <div>
                 <button type="submit">Import</button>
             </div>

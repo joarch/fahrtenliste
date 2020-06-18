@@ -1,8 +1,8 @@
 from django.contrib import admin
 from reversion_compare.admin import CompareVersionAdmin
 
-from fahrtenliste_main.export_import.exports import serve_export
 from fahrtenliste_main.export_import.export_adresse import export_adressen
+from fahrtenliste_main.export_import.exports import serve_export
 from fahrtenliste_main.models import Adresse
 
 
@@ -14,7 +14,12 @@ class AdresseAdmin(CompareVersionAdmin):
     readonly_fields = ('id',)
     list_filter = ('plz',)
     search_fields = ('strasse', 'plz', 'ort')
-    change_list_template = 'administration/adresse_admin_change_list_mit_import.html'
+    change_list_template = 'administration/admin_change_list_mit_import.html'
+
+    def changelist_view(self, request, extra_context=None):
+        extra_context = extra_context or {}
+        extra_context['import_url'] = 'import_adresse'
+        return super(AdresseAdmin, self).changelist_view(request, extra_context=extra_context)
 
     def make_export(self, request, queryset):
         adressen = list(queryset)

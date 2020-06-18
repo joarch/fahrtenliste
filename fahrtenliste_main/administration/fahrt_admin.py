@@ -106,6 +106,7 @@ class FahrtAdmin(CompareVersionAdmin):
     list_filter = (FahrtMonatFilter, ('adresse', RelatedDropdownFilter), ('kunde', RelatedDropdownFilter),)
     autocomplete_fields = ['kunde', 'adresse']
     form = FahrtAdminForm
+    change_list_template = 'administration/admin_change_list_mit_import.html'
 
     def kunde_kurz(self, obj):
         if obj.kunde is not None:
@@ -165,6 +166,11 @@ class FahrtAdmin(CompareVersionAdmin):
             path('report/', self.report)
         ]
         return my_urls + urls
+
+    def changelist_view(self, request, extra_context=None):
+        extra_context = extra_context or {}
+        extra_context['import_url'] = 'import_fahrt'
+        return super(FahrtAdmin, self).changelist_view(request, extra_context=extra_context)
 
     def report(self, request):
         return show_report(request)

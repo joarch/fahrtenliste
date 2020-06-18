@@ -1,6 +1,6 @@
+import datetime
 import os
 import tempfile
-import datetime
 
 from django.conf import settings
 
@@ -24,3 +24,20 @@ def get_tempdir(user=None):
         os.mkdir(tempdir)
 
     return tempdir
+
+
+def write_to_temp_file(user, file, tempfile_mit_timestamp=False):
+    """
+    Schreibt das übergebene File in das Temp Verzeichnis.
+    Gibt den Namen der Temp-Datei zurück.
+    """
+    filename, file_extension = os.path.splitext(file.name)
+    temp_dir = get_tempdir(user)
+    timestamp = get_timestamp() if tempfile_mit_timestamp else ""
+    temp_file = "{}_{}{}".format(filename, timestamp, file_extension)
+    temp_file_path = os.path.join(temp_dir, temp_file)
+    with open(temp_file_path, 'wb+') as destination:
+        for chunk in file.chunks():
+            destination.write(chunk)
+
+    return temp_file_path
