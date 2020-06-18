@@ -1,6 +1,4 @@
-# Export und Import Excel
-export mit historischen Daten
-
+# Import Excel
 - adresse import
 - kunden import
 - fahrt import
@@ -9,5 +7,3 @@ erster import simulation read only
 aus dem result ansicht richtigen import ohne simulation durchführen
 
 # Anreden im Edit Modus mit ComboBox darstellen, Values distinct auf kunden anrede
-
-

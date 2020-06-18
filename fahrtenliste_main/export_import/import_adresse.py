@@ -7,7 +7,7 @@ from fahrtenliste_main.export_import.excel import is_empty_value
 from fahrtenliste_main.export_import.imports import import_von_excel
 from fahrtenliste_main.models import Adresse
 from fahrtenliste_main.temp_dir import get_tempdir
-from temp_dir import get_timestamp
+from fahrtenliste_main.temp_dir import get_timestamp
 
 IMPORT_FORMAT_ADRESSE_STANDARD = {
     "id": "fahrtenliste",
@@ -120,7 +120,7 @@ def _neue_adresse(adresse_source, neu, dry_run):
                                   ort=adresse_source['ort'], entfernung=adresse_source['entfernung'])
     if not dry_run:
         adresse_destination.save()
-    neu.append(f"{_adresse_mit_link(adresse_destination)}")
+    neu.append(f"{_adresse_mit_link(adresse_destination, dry_run)}")
 
 
 def _check_aenderung(adresse_source, adresse_destination, geaendert, unveraendert, dry_run):
@@ -152,7 +152,9 @@ def _key(strasse, plz, ort):
     return f"{strasse} {plz} {ort}"
 
 
-def _adresse_mit_link(adresse):
+def _adresse_mit_link(adresse, ohne_link=False):
+    if ohne_link:
+        return str(adresse)
     url = f"/admin/fahrtenliste_main/adresse/{adresse.id}/change"
     link = f"<a target='_blank' href='{url}'>{adresse}</a>"
     return link

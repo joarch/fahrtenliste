@@ -12,11 +12,11 @@ from django.utils import formats
 from django_admin_listfilter_dropdown.filters import RelatedDropdownFilter
 from reversion_compare.admin import CompareVersionAdmin
 
-from fahrtenliste_main.historisch import str_kunde_historisch, str_adresse_historisch
 from fahrtenliste_main.administration.fahrt_admin_report import get_von_bis_aus_request
 from fahrtenliste_main.administration.fahrt_admin_report import show_report
 from fahrtenliste_main.export_import.export_fahrt import export_fahrten
 from fahrtenliste_main.export_import.exports import serve_export
+from fahrtenliste_main.historisch import str_kunde_historisch, str_adresse_historisch
 from fahrtenliste_main.models import Fahrt
 
 semaphore_fahrt_nr = Semaphore()
@@ -170,7 +170,13 @@ class FahrtAdmin(CompareVersionAdmin):
         return show_report(request)
 
     def make_export(self, request, queryset):
-        von, bis = get_von_bis_aus_request(request)
+        if request.GET.get("datum__year") is None \
+                and request.GET.get("datum__month") is None \
+                and request.GET.get("datum__day") is None:
+            von = None
+            bis = None
+        else:
+            von, bis = get_von_bis_aus_request(request)
         fahrten = list(queryset)
         file_path = export_fahrten(von, bis, fahrten)
         return serve_export(request, file_path)
