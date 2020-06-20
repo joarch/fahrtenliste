@@ -6,13 +6,14 @@
 {% block title %}Fahrtenliste | Report{% endblock %}
 
 {% block branding %}
-    <h1 id="site-name">Report eindeutige Fahrten</h1>
+    <h1 id="site-name">Fahrtenliste</h1>
 {% endblock %}
 
 {% block breadcrumbs %}
     <div class="breadcrumbs">
         <a href="{% url 'admin:index' %}">{% trans 'Home' %}</a>
         &rsaquo; <a href="{{ data.fahrten_url }}">Fahrten</a>
+        &rsaquo; Report eindeutige Fahrten
     </div>
 {% endblock %}
 

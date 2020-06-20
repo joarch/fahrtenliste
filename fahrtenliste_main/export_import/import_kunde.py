@@ -64,6 +64,8 @@ def _import_kunden(user, file, import_format, dry_run, tempfile_mit_timestamp=Fa
     kunden_destination_by_id = {k.id: k for k in kunden_destination}
     kunden_destination_by_key = {kunde_key(k.vorname, k.nachname): k for k in kunden_destination}
 
+    _assert_entfernung_eindeutig(kunden_source)
+
     adressen_destination = Adresse.objects.filter()
     adressen_destination_by_key = {adresse_key(a.strasse, a.plz, a.ort): a for a in adressen_destination}
 
@@ -71,48 +73,19 @@ def _import_kunden(user, file, import_format, dry_run, tempfile_mit_timestamp=Fa
     for kunde_source in kunden_source_ohne_id:
         key = kunde_key(kunde_source["vorname"], kunde_source["nachname"])
         kunde_destination = kunden_destination_by_key.get(key)
-        if kunde_destination is None:
-            kunde_destination = neuer_kunde(kunde_source, neu, dry_run)
-            new = True
-            change = False
-        else:
-            kunden_in_source.append(kunde_destination)
-            new = False
-            change = _check_aenderung(kunde_source, kunde_destination, geaendert, unveraendert, dry_run)
 
-        key_adresse = adresse_key(kunde_source["strasse"], kunde_source["plz"], kunde_source["ort"])
+        _import_kunde_und_adresse(kunde_source, kunde_destination, kunden_in_source, adressen_destination_by_key, neu,
+                                  geaendert,
+                                  unveraendert, dry_run)
 
-        # Adresse zum Kunden
-        if kunde_destination.adresse is None and key_adresse:
-            adresse = adressen_destination_by_key.get(key_adresse)
-            neu_str = ""
-            if adresse is None:
-                # neue Adresse
-                neu_str = " (neue Adresse)"
-                adresse = neue_adresse(kunde_source, neu if not new else [], dry_run)
-                adressen_destination_by_key[adresse_key] = adresse
-            kunde_destination.adresse = adresse
-            if not dry_run:
-                kunde_destination.save()
-            if new:
-                neu.pop()
-                neu.append(f"Kunde: {kunde_mit_link(kunde_destination, dry_run)}")
-            else:
-                if not change:
-                    # wenn Kunde nicht geändert Info über Adressen Änderung ausgeben
-                    geaendert.append(
-                        f"Kunde: {kunde_mit_link(kunde_destination)}; Adresse: {adresse_mit_link(adresse)}{neu_str}")
-                else:
-                    # wenn Kunde geändert Adresse als Detail anhängen
-                    geaendert.append(f"; Adresse: {adresse_mit_link(adresse)}{neu_str}")
-        elif kunde_destination.adresse is None and not key_adresse:
-            # vorher und nachher keine Adresse
-            pass
-        else:
-            check_aenderung_adresse(kunde_source, kunde_destination.adresse, geaendert, [], dry_run)
+    # alle Kunden mit Id Spalte
+    for id, kunde_source in kunden_source_by_id.items():
+        # Suche mit Id
+        kunde_destination = kunden_destination_by_id.get(id)
 
-    # TODO Kunden mit ID Spalte
-
+        _import_kunde_und_adresse(kunde_source, kunde_destination, kunden_in_source, adressen_destination_by_key, neu,
+                                  geaendert,
+                                  unveraendert, dry_run)
 
     # Warnungen bei Kunden, die nicht mehr in der Liste stehen
     # Hinweis: es werden keine Kunden automatisch gelöscht
@@ -134,6 +107,72 @@ def _import_kunden(user, file, import_format, dry_run, tempfile_mit_timestamp=Fa
     }
 
 
+def _assert_entfernung_eindeutig(kunden_source):
+    """
+    Prüft ob die Entfernungen zu einer Adresse immer gleich ist, wenn die Adresse mehrfach im Import ist
+    """
+    kunden_source_by_adresse_key = dict()
+    for kunde_source in kunden_source:
+        key_adresse = adresse_key(kunde_source["strasse"], kunde_source["plz"], kunde_source["ort"])
+        kunde_source_existing = kunden_source_by_adresse_key.get(key_adresse)
+        if kunde_source_existing is not None:
+            # die Entfernung muss gleich sein, wenn die Adresse mehrfach im Import ist
+            if kunde_source_existing["entfernung"] != kunde_source["entfernung"]:
+                raise ValueError(f"Fehler: die Entfernung der Adresse {key_adresse} ist nicht eindeutig."
+                                 f" Entfernung 1: {kunde_source_existing['entfernung']} km,"
+                                 f" Entfernung 2: {kunde_source['entfernung']} km")
+        kunden_source_by_adresse_key[key_adresse] = kunde_source
+
+
+def _import_kunde_und_adresse(kunde_source, kunde_destination, kunden_in_source, adressen_destination_by_key, neu,
+                              geaendert, unveraendert, dry_run):
+    # Kunde
+    if kunde_destination is None:
+        kunde_destination = neuer_kunde(kunde_source, neu, dry_run)
+        new = True
+        change = False
+    else:
+        kunden_in_source.append(kunde_destination)
+        new = False
+        change = check_aenderung_kunde(kunde_source, kunde_destination, geaendert, unveraendert, dry_run)
+
+    # Adresse des Kunden
+    key_adresse = adresse_key(kunde_source["strasse"], kunde_source["plz"], kunde_source["ort"])
+    if kunde_destination.adresse is None and key_adresse:
+        adresse = adressen_destination_by_key.get(key_adresse)
+        neu_str = ""
+        if adresse is None:
+            # neue Adresse
+            neu_str = " (neue Adresse)"
+            adresse = neue_adresse(kunde_source, neu if not new else [], dry_run)
+            adressen_destination_by_key[adresse_key] = adresse
+        kunde_destination.adresse = adresse
+        if not dry_run:
+            kunde_destination.save()
+        if new:
+            neu.pop()
+            neu.append(f"Kunde: {kunde_mit_link(kunde_destination, dry_run)}")
+        else:
+            if not change:
+                # wenn Kunde nicht geändert Info über Adressen Änderung ausgeben
+                geaendert.append(
+                    f"Kunde: {kunde_mit_link(kunde_destination)}; Adresse: {adresse_mit_link(adresse)}{neu_str}")
+            else:
+                # wenn Kunde geändert Adresse als Detail anhängen
+                geaendert.append(f"; Adresse: {adresse_mit_link(adresse)}{neu_str}")
+
+    elif kunde_destination.adresse is None and not key_adresse:
+        # vorher und nachher keine Adresse
+        pass
+    else:
+        # evtl. geänderte Adresse
+        geaendert_adresse = list()
+        check_aenderung_adresse(kunde_source, kunde_destination.adresse, geaendert_adresse, [], dry_run)
+        for aenderung_adresse in geaendert_adresse:
+            if aenderung_adresse not in geaendert:
+                geaendert.append(aenderung_adresse)
+
+
 def neuer_kunde(kunde_source, neu, dry_run):
     kunde_destination = Kunde(anrede=kunde_source['anrede'], vorname=kunde_source['vorname'],
                               nachname=kunde_source['nachname'])
@@ -143,7 +182,7 @@ def neuer_kunde(kunde_source, neu, dry_run):
     return kunde_destination
 
 
-def _check_aenderung(kunde_source, kunde_destination, geaendert, unveraendert, dry_run):
+def check_aenderung_kunde(kunde_source, kunde_destination, geaendert, unveraendert, dry_run):
     aenderung = list()
     if kunde_destination.anrede != kunde_source["anrede"]:
         aenderung.append(f"Anrede: alt='{kunde_destination.anrede}', neu='{kunde_source['anrede']}'")

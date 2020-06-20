@@ -88,6 +88,9 @@ def to_adresse_historisch(adresse_historisch_data):
 def to_kunde_historisch(kunde_historisch_data):
     try:
         data_dict = json.loads(kunde_historisch_data)
+        # ohne Adresse
+        data_dict["fields"]["adresse"] = None
+        data_dict["fields"]["adresse_historisch"] = None
         return Kunde(**data_dict["fields"])
     except:
         logging.exception('')

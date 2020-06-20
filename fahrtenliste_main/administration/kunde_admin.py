@@ -31,6 +31,9 @@ class KundeAdmin(CompareVersionAdmin):
             return str_adresse_historisch(obj.adresse_historisch)
         return ""
 
+    adresse_kurz.admin_order_field = 'adresse__strasse'
+    adresse_kurz.short_description = 'Adresse'
+
     def changelist_view(self, request, extra_context=None):
         extra_context = extra_context or {}
         extra_context['import_url'] = 'import_kunde'

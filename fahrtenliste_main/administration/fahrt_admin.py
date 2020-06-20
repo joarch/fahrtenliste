@@ -64,7 +64,7 @@ class FahrtMonatFilter(SimpleListFilter):
 class FahrtAdminForm(forms.ModelForm):
     class Media:
         css = {
-            'all': ('pretty.css', 'css/fahrt_admin.css')
+            'all': ('css/fahrt_admin.css',)
         }
         js = ('3rdparty/js/jquery-3.2.1.min.js', 'js/fahrt_admin.js',)
 
@@ -95,7 +95,7 @@ class FahrtAdminForm(forms.ModelForm):
 
 @admin.register(Fahrt)
 class FahrtAdmin(CompareVersionAdmin):
-    change_list_template = "administration/fahrt_admin_change_list.html"
+    change_list_template = "administration/admin_change_list_fahrt.html"
     list_display = ('fahrt_nr', 'datum', 'kunde_kurz', 'adresse_kurz', 'str_entfernung')
     list_display_links = ('fahrt_nr', 'datum')
     search_fields = ('kommentar',
@@ -106,7 +106,6 @@ class FahrtAdmin(CompareVersionAdmin):
     list_filter = (FahrtMonatFilter, ('adresse', RelatedDropdownFilter), ('kunde', RelatedDropdownFilter),)
     autocomplete_fields = ['kunde', 'adresse']
     form = FahrtAdminForm
-    change_list_template = 'administration/admin_change_list_mit_import.html'
 
     def kunde_kurz(self, obj):
         if obj.kunde is not None:

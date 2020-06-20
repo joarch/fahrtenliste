@@ -1,5 +1,4 @@
 # Import Excel
-- kunden import
 - fahrt import
 
 erster import simulation read only

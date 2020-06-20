@@ -2,6 +2,8 @@
 {% load static %}
 {% load fahrtenliste_main_extras %}
 
+{% load i18n admin_urls %}
+
 {% block object-tools %}
     <script type="text/javascript" src="{% static "3rdparty/js/jquery-3.2.1.min.js" %}?{% programmversion %}"></script>
     <script type="text/javascript" src="{% static "3rdparty/js/qurl.js" %}?{% programmversion %}"></script>
@@ -62,5 +64,16 @@
         </ul>
     </div>
     <br/>
+    {{ block.super }}
+{% endblock %}
+
+{% block object-tools-items %}
+    <li><a href="/fahrtenliste_main/export_import/{{ import_url }}">{% blocktrans with cl.opts.verbose_name_plural|escape as name %}Import
+        {{ name }}{% endblocktrans %}&nbsp;<b>&uarr;</b></a></li>
+    {% if not is_popup and has_add_permission and has_change_permission %}
+        <li><a href="{% url opts|admin_urlname:'recoverlist' %}" class="recoverlink">
+            {% blocktrans with cl.opts.verbose_name_plural|escape as name %}Recover deleted
+                {{ name }}{% endblocktrans %}</a></li>
+    {% endif %}
     {{ block.super }}
 {% endblock %}

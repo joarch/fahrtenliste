@@ -7,8 +7,8 @@ from openpyxl import load_workbook
 from openpyxl.utils.cell import column_index_from_string, get_column_letter
 
 from fahrtenliste_main.export_import.excel import is_empty_value
-from fahrtenliste_main.logs import log_entry_change
 from fahrtenliste_main.format_util import to_bool
+from fahrtenliste_main.logs import log_entry_change
 
 logger = logging.getLogger(__name__)
 del logging
@@ -20,7 +20,12 @@ def do_import(import_fct, request):
     import_format = request.POST['format']
     dry_run = to_bool(request.POST.get('dry_run', False))
 
-    result = import_fct(request.user, filename, import_format, dry_run=dry_run)
+    try:
+        result = import_fct(request.user, filename, import_format, dry_run=dry_run)
+    except ValueError as e:
+        messages.error(request, str(e))
+        return {}
+
     result_message_success = "Neu: {}, " \
                              "gelöscht: {}, " \
                              "geändert: {}, " \

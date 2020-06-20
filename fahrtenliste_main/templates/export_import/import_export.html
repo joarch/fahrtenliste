@@ -4,6 +4,15 @@
 {% load static %}
 {% load fahrtenliste_main_extras %}
 
+{% block breadcrumbs %}
+    <div class="breadcrumbs">
+        <a href="{% url 'admin:index' %}">{% trans 'Home' %}</a>
+        &rsaquo; <a href="/admin/fahrtenliste_main">Fahrtenliste</a>
+        &rsaquo; <a href="/admin/fahrtenliste_main/{{ model_objekt_url }}">{{ model_objekt_name }}</a>
+        &rsaquo; Import {{ model_objekt_name }}
+    </div>
+{% endblock %}
+
 {% block content %}
 
     <style>

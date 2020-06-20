@@ -23,7 +23,7 @@ def export_kunden(kunden):
     for kunde in kunden:
         kunde_dict = model_to_dict(kunde)
 
-        add_adresse_to_dict(kunde.adresse, kunde.adresse_historisch, kunde_dict)
+        _add_adresse_to_dict(kunde.adresse, kunde.adresse_historisch, kunde_dict)
 
         kunde_dict_filtered = {field: kunde_dict[field] for field in Kunde_tuple._fields}
         kunde_data = namedtuple('kunde', kunde_dict_filtered.keys())(**kunde_dict_filtered)
@@ -45,7 +45,7 @@ def export_kunden(kunden):
                              filename_postfix="Fahrtenliste")
 
 
-def add_adresse_to_dict(adresse, adresse_historisch, kunde_dict):
+def _add_adresse_to_dict(adresse, adresse_historisch, kunde_dict):
     if adresse is None and adresse_historisch is not None:
         adresse = to_adresse_historisch(adresse_historisch)
 
