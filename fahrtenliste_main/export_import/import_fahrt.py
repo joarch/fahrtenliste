@@ -105,7 +105,7 @@ def _import_fahrt(user, file, import_format, dry_run, tempfile_mit_timestamp=Fal
 
         _import_fahrt_kunde_adresse(fahrt_source, fahrt_destination, fahrten_in_source,
                                     kunden_destination_by_key, adressen_destination_by_key,
-                                    neu, geaendert, unveraendert, dry_run)
+                                    neu, geaendert, unveraendert, warnung, dry_run)
 
     # alle Fahrten mit Id Spalte
     for id, fahrt_source in fahrten_source_by_id.items():
@@ -113,7 +113,7 @@ def _import_fahrt(user, file, import_format, dry_run, tempfile_mit_timestamp=Fal
         fahrt_destination = fahrten_destination_by_id.get(id)
         _import_fahrt_kunde_adresse(fahrt_source, fahrt_destination, fahrten_in_source,
                                     kunden_destination_by_key, adressen_destination_by_key,
-                                    neu, geaendert, unveraendert, dry_run)
+                                    neu, geaendert, unveraendert, warnung, dry_run)
 
     nicht_im_import_aktion = import_format["nicht_im_import_aktion"]
     if nicht_im_import_aktion == "WARNUNG":
@@ -146,7 +146,7 @@ def _import_fahrt(user, file, import_format, dry_run, tempfile_mit_timestamp=Fal
 
 def _import_fahrt_kunde_adresse(fahrt_source, fahrt_destination, fahrten_in_source,
                                 kunden_destination_by_key, adressen_destination_by_key,
-                                neu, geaendert, unveraendert, dry_run):
+                                neu, geaendert, unveraendert, warnungen, dry_run):
     key_kunde = kunde_key(fahrt_source["vorname"], fahrt_source["nachname"])
     key_adresse = adresse_key(fahrt_source["strasse"], fahrt_source["plz"], fahrt_source["ort"])
 
@@ -226,6 +226,10 @@ def _import_fahrt_kunde_adresse(fahrt_source, fahrt_destination, fahrten_in_sour
         geaendert.append(f"Fahrt: {fahrt_mit_link(fahrt_destination)}{zusatzinfo_str}, {str_aenderungen}")
     else:
         unveraendert.append(f"Fahrt: {fahrt_mit_link(fahrt_destination)}")
+
+    if fahrt_destination.entfernung is None:
+        warnungen.append(f"Fahrt: {fahrt_mit_link(fahrt_destination, dry_run)}. Unbekannte Entfernung!")
+
 
 
 def neue_fahrt(fahrt_source):
