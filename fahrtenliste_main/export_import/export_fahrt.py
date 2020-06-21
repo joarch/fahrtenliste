@@ -3,7 +3,7 @@ from collections import namedtuple
 from django.forms import model_to_dict
 
 from fahrtenliste_main.export_import.exports import export_nach_excel, none_mapping
-from historisch import to_kunde_historisch, to_adresse_historisch
+from fahrtenliste_main.historisch import to_kunde_historisch, to_adresse_historisch
 
 Fahrt_tuple = namedtuple('fahrt',
                          ['id',

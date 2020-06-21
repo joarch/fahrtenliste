@@ -14,7 +14,7 @@ logger = logging.getLogger(__name__)
 del logging
 
 
-def do_import(import_fct, request):
+def do_import(import_fct, model_objekt_name, model_objekt_url, request):
     start = datetime.datetime.now()
     filename = request.FILES['file']
     import_format = request.POST['format']
@@ -50,7 +50,7 @@ def do_import(import_fct, request):
     result["import_dauer"] = str_duration(end - start)
     result["result"] = result_message
     messages.success(request, mark_safe("Fertig: " + result_message))
-    log_entry_change(request.user, "adresse", "Adressen Import",
+    log_entry_change(request.user, model_objekt_url, f"{model_objekt_name} Import",
                      result["filename"] + " (" + result["format"] + "): " + result_message_success)
     return result
 

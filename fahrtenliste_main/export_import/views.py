@@ -62,7 +62,7 @@ def _import(request, model_objekt_name, model_objekt_url, typ):
             import_fct = do_import_fahrten
         else:
             raise RuntimeError(f"Unbekannter Import Typ: '{data['typ']}'")
-        result = do_import(import_fct, request)
+        result = do_import(import_fct, model_objekt_name, model_objekt_url, request)
         result["model_objekt_name"] = model_objekt_name
         result["model_objekt_url"] = model_objekt_url
         result["typ"] = typ
