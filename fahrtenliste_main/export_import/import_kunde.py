@@ -16,6 +16,7 @@ IMPORT_FORMAT_KUNDE_STANDARD = {
     "beschreibung": "Fahrtenliste Standard Format Kunde",
     "filemuster": "Fahrtenliste_Kunden_.*\\.xlsx",
     "start_row": 2,
+    "nicht_im_import_aktion": "WARNUNG",
     "columns":
         {
             "A": "id",
@@ -73,25 +74,29 @@ def _import_kunden(user, file, import_format, dry_run, tempfile_mit_timestamp=Fa
     for kunde_source in kunden_source_ohne_id:
         key = kunde_key(kunde_source["vorname"], kunde_source["nachname"])
         kunde_destination = kunden_destination_by_key.get(key)
-
-        _import_kunde_und_adresse(kunde_source, kunde_destination, kunden_in_source, adressen_destination_by_key, neu,
-                                  geaendert,
-                                  unveraendert, dry_run)
+        _import_kunde_adresse(kunde_source, kunde_destination, kunden_in_source, adressen_destination_by_key, neu,
+                              geaendert,
+                              unveraendert, dry_run)
 
     # alle Kunden mit Id Spalte
     for id, kunde_source in kunden_source_by_id.items():
         # Suche mit Id
         kunde_destination = kunden_destination_by_id.get(id)
+        _import_kunde_adresse(kunde_source, kunde_destination, kunden_in_source, adressen_destination_by_key, neu,
+                              geaendert,
+                              unveraendert, dry_run)
 
-        _import_kunde_und_adresse(kunde_source, kunde_destination, kunden_in_source, adressen_destination_by_key, neu,
-                                  geaendert,
-                                  unveraendert, dry_run)
-
-    # Warnungen bei Kunden, die nicht mehr in der Liste stehen
-    # Hinweis: es werden keine Kunden automatisch gelöscht
-    for id, kunde_destination in kunden_destination_by_id.items():
-        if kunde_destination not in kunden_in_source:
-            warnung.append(f"fehlt im Import: {kunde_mit_link(kunde_destination)}")
+    nicht_im_import_aktion = import_format["nicht_im_import_aktion"]
+    if nicht_im_import_aktion == "WARNUNG":
+        # Warnungen bei Kunden, die nicht mehr in der Liste stehen
+        # Hinweis: es werden keine Kunden automatisch gelöscht
+        for id, kunde_destination in kunden_destination_by_id.items():
+            if kunde_destination not in kunden_in_source:
+                warnung.append(f"fehlt im Import: {kunde_mit_link(kunde_destination)}")
+    elif nicht_im_import_aktion == "NICHTS":
+        pass
+    else:
+        raise RuntimeError(f"Unbekannte 'nicht_im_import_aktion': '{nicht_im_import_aktion}'")
 
     return {
         "format": "{}".format(import_format["name"]),
@@ -124,8 +129,8 @@ def _assert_entfernung_eindeutig(kunden_source):
         kunden_source_by_adresse_key[key_adresse] = kunde_source
 
 
-def _import_kunde_und_adresse(kunde_source, kunde_destination, kunden_in_source, adressen_destination_by_key, neu,
-                              geaendert, unveraendert, dry_run):
+def _import_kunde_adresse(kunde_source, kunde_destination, kunden_in_source, adressen_destination_by_key, neu,
+                          geaendert, unveraendert, dry_run):
     # Kunde
     if kunde_destination is None:
         kunde_destination = neuer_kunde(kunde_source, neu, dry_run)

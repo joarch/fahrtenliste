@@ -1,5 +1,4 @@
 from datetime import datetime
-from threading import Semaphore
 
 from dateutil.relativedelta import relativedelta
 from django import forms
@@ -12,14 +11,13 @@ from django.utils import formats
 from django_admin_listfilter_dropdown.filters import RelatedDropdownFilter
 from reversion_compare.admin import CompareVersionAdmin
 
+from fahrt_util import get_next_fahrt_nr
 from fahrtenliste_main.administration.fahrt_admin_report import get_von_bis_aus_request
 from fahrtenliste_main.administration.fahrt_admin_report import show_report
 from fahrtenliste_main.export_import.export_fahrt import export_fahrten
 from fahrtenliste_main.export_import.exports import serve_export
 from fahrtenliste_main.historisch import str_kunde_historisch, str_adresse_historisch
 from fahrtenliste_main.models import Fahrt
-
-semaphore_fahrt_nr = Semaphore()
 
 
 class FahrtMonatFilter(SimpleListFilter):
@@ -96,12 +94,13 @@ class FahrtAdminForm(forms.ModelForm):
 @admin.register(Fahrt)
 class FahrtAdmin(CompareVersionAdmin):
     change_list_template = "administration/admin_change_list_fahrt.html"
-    list_display = ('fahrt_nr', 'datum', 'kunde_kurz', 'adresse_kurz', 'str_entfernung')
+    list_display = ('fahrt_nr', 'datum', 'kunde_kurz', 'adresse_kurz', 'entfernung')
     list_display_links = ('fahrt_nr', 'datum')
     search_fields = ('kommentar',
                      'kunde__nachname', 'kunde__vorname',
                      'adresse__strasse', 'adresse__plz', 'adresse__ort',)
     date_hierarchy = 'datum'
+    list_editable = ('entfernung',)
     readonly_fields = ('id', 'kunde_historisch', 'adresse_historisch')
     list_filter = (FahrtMonatFilter, ('adresse', RelatedDropdownFilter), ('kunde', RelatedDropdownFilter),)
     autocomplete_fields = ['kunde', 'adresse']
@@ -116,12 +115,6 @@ class FahrtAdmin(CompareVersionAdmin):
 
     kunde_kurz.admin_order_field = 'kunde__nachname'
     kunde_kurz.short_description = 'Kunde'
-
-    def str_entfernung(self, obj):
-        return obj.str_entfernung()
-
-    str_entfernung.admin_order_field = 'entfernung'
-    str_entfernung.short_description = 'Entfernung (km)'
 
     def adresse_kurz(self, obj):
         if obj.adresse is not None:
@@ -148,15 +141,16 @@ class FahrtAdmin(CompareVersionAdmin):
                 # Bei Neuanlage wird die Adresse vorbelegt
                 obj.adresse = obj.kunde.adresse
 
-            if obj.entfernung is None:
-                # Bei Neuanlage wird die Entfernung vorbelegt
-                obj.entfernung = obj.kunde.adresse.entfernung
+        if obj.entfernung is None:
+            # Bei Neuanlage oder erstmaliger Adressen Zuordnung wird die Entfernung vorbelegt
+            if obj.adresse is not None:
+                obj.entfernung = obj.adresse.entfernung
 
         super(FahrtAdmin, self).save_model(request, obj, form, change)
 
     def formfield_for_dbfield(self, db_field, **kwargs):
         if db_field.name == 'fahrt_nr':
-            kwargs['initial'] = _get_next_fahrt_nr()
+            kwargs['initial'] = get_next_fahrt_nr()
         return super(FahrtAdmin, self).formfield_for_dbfield(db_field, **kwargs)
 
     def get_urls(self):
@@ -189,11 +183,3 @@ class FahrtAdmin(CompareVersionAdmin):
     make_export.short_description = "Ausgewählte Fahrten exportieren"
 
     actions = [make_export]
-
-
-def _get_next_fahrt_nr():
-    semaphore_fahrt_nr.acquire()
-    max = Fahrt.objects.all().aggregate(Max('fahrt_nr'))['fahrt_nr__max']
-    next = int(max) + 1 if max is not None else 1
-    semaphore_fahrt_nr.release()
-    return next

@@ -107,13 +107,16 @@ class Fahrt(models.Model):
         return self.str_detaliert()
 
     def str_detaliert(self):
-        return f"Datum: {self.datum.strftime('%d.%m.%Y')}; " \
-               f"Kunde: {self.kunde.str_kurz() if self.kunde else ''}; " \
-               + self.str_ziel()
+        fahrt_str = f"Datum: {self.datum.strftime('%d.%m.%Y')};"
+        if self.kunde is not None:
+            fahrt_str += f" Kunde: {self.kunde.str_kurz() if self.kunde else ''};"
+        return fahrt_str + self.str_ziel()
 
     def str_ziel(self):
-        return f"Adresse: {self.adresse.str_kurz() if self.adresse else ''}; " \
-               f"Entfernung: {self.entfernung} km"
+        ziel_str = ""
+        if self.adresse is not None:
+            ziel_str = f" Adresse: {self.adresse.str_kurz() if self.adresse else ''};"
+        return ziel_str + f" Entfernung: {self.entfernung or '?'} km"
 
     def str_adresse_kurz(self):
         if self.adresse is not None:
@@ -124,7 +127,7 @@ class Fahrt(models.Model):
         if self.adresse is not None:
             if self.adresse.entfernung != self.entfernung:
                 title = "Die Entfernung weicht von der Entfernung der Adresse ab."
-                return format_html(f"<span title='{title}' style='color: red;'>{self.entfernung}</span>")
+                return format_html(f"<span title='{title}' style='color: red;'>{self.entfernung or '?'}</span>")
             else:
                 return str(self.entfernung)
         return str(self.entfernung)
@@ -144,9 +147,11 @@ class Einstellung(models.Model):
     wert_date = models.DateField(null=True, blank=True)
     wert_char = models.CharField(max_length=255, null=True, blank=True)
     wert_decimal = models.DecimalField(max_digits=6, decimal_places=2, null=True, blank=True)
+    wert_int = models.IntegerField(null=True, blank=True)
+    beschreibung = models.TextField(max_length=1000, blank=True, null=True)
 
     def __str__(self):
-        return self.name + ": " + self.wert
+        return self.name + ": " + str(self.wert)
 
     @property
     def wert(self):
@@ -157,6 +162,8 @@ class Einstellung(models.Model):
             werte.append(self.wert_char)
         if self.wert_decimal:
             werte.append(self.wert_decimal)
+        if self.wert_int:
+            werte.append(self.wert_int)
         if len(werte) > 1:
             raise RuntimeError(
                 f"Der Wert der Einstellung '{self.name}' ist nicht eindeutig, es darf nur ein Wert angegeben werden.")

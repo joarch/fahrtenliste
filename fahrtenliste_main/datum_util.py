@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta
+from datetime import date, datetime, timedelta
 
 
 def get_jahr_von_bis(year):
@@ -15,3 +15,12 @@ def get_monat_von_bis(datum):
         bis = datetime(datum.year, datum.month + 1, 1)
     bis = bis - timedelta(days=1)
     return von, bis
+
+
+def str_datum(datum):
+    if type(datum) == date:
+        return datum.strftime("%d.%m.%Y")
+    if type(datum) == datetime:
+        return datum.strftime("%d.%m.%Y")
+    if type(datum) == str:
+        return datum

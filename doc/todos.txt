@@ -1,5 +1,3 @@
-# Import Excel
-- fahrt import
 
 erster import simulation read only
 aus dem result ansicht richtigen import ohne simulation durchführen

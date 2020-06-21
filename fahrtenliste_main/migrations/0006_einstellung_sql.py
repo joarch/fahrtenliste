@@ -10,7 +10,12 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RunSQL("insert into einstellung (name, wert_char) values ('name', '');", reverse_sql=""),
+        migrations.RunSQL(
+            "insert into einstellung "
+            "(name, wert_char, beschreibung) "
+            "values "
+            "('name', '', 'Name der im Report angezeigt wird');",
+            reverse_sql=""),
         migrations.RunSQL("insert into einstellung (name, wert_decimal) values ('kilometerpauschale', 0.3);",
                           reverse_sql=""),
     ]

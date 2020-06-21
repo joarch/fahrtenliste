@@ -30,9 +30,9 @@ def str_kunde_historisch(kunde_historisch_data, as_html=True):
     except:
         if as_html:
             title = "Fehler beim Lesen des gelöschten Kunden aus dem Feld 'Kunde Historie'"
-            return format_html(f"<span style='color: red' title='{title}'>Kunde gelöscht</span>")
+            return format_html(f"<span style='color: red' title='{title}'>ohne Kunde</span>")
         else:
-            return "Kunde gelöscht"
+            return "ohne Kunde"
 
 
 def str_adresse_historisch(adresse_historisch_data, entfernung=None, as_html=True):
@@ -50,9 +50,9 @@ def str_adresse_historisch(adresse_historisch_data, entfernung=None, as_html=Tru
     except:
         if as_html:
             title = "Fehler beim Lesen der gelöschten Adresse aus dem Feld 'Adresse Historie'"
-            return format_html(f"<span style='color: red' title='{title}'>Adresse gelöscht</span>")
+            return format_html(f"<span style='color: red' title='{title}'>ohne Adresse</span>")
         else:
-            return "Adresse gelöscht"
+            return "ohne Adresse"
 
 
 def str_adresse_entfernung_historisch(adresse_historisch_data, as_html=True):
@@ -71,12 +71,14 @@ def str_adresse_entfernung_historisch(adresse_historisch_data, as_html=True):
         logging.exception('')
         if as_html:
             title = "Fehler beim Lesen der gelöschten Adresse aus dem Feld 'Adresse Historie'"
-            return format_html(f"<span style='color: red' title='{title}'>Adresse gelöscht</span>")
+            return format_html(f"<span style='color: red' title='{title}'>ohne Adresse</span>")
         else:
-            return "Adresse gelöscht"
+            return "ohne Adresse"
 
 
 def to_adresse_historisch(adresse_historisch_data):
+    if adresse_historisch_data is None:
+        return None
     try:
         data_dict = json.loads(adresse_historisch_data)
         return Adresse(**data_dict["fields"])
@@ -86,6 +88,8 @@ def to_adresse_historisch(adresse_historisch_data):
 
 
 def to_kunde_historisch(kunde_historisch_data):
+    if kunde_historisch_data is None:
+        return None
     try:
         data_dict = json.loads(kunde_historisch_data)
         # ohne Adresse

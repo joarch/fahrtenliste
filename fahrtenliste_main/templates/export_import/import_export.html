@@ -1,8 +1,9 @@
 {% extends "admin/base_site.html" %}
 {% load i18n admin_urls static admin_list %}
-
 {% load static %}
 {% load fahrtenliste_main_extras %}
+
+{% block title %}Fahrtenliste | Import{% endblock %}
 
 {% block breadcrumbs %}
     <div class="breadcrumbs">
@@ -72,21 +73,26 @@
 
     <form method="post" enctype="multipart/form-data">
         {% csrf_token %}
+        <hr>
         <div>
-            <div>
+            <div style="margin-top: 10px">
                 <!-- https://tympanus.net/Tutorials/CustomFileInputs/ -->
                 <input id="file" type="file" name="file" accept=".xlsx" class="inputfile inputfile-1"/>
                 <label for="file"><span>Datei auswählen...</span></label>
             </div>
-            <div>
+            <div style="margin-top: 10px">
                 Format: <select name="format">
                 <!-- TODO aus import_adressen verwenden -->
                 <option value="fahrtenliste">Fahrtenliste (Standard)</option>
             </select>
             </div>
-            <input id="dry_run" name="dry_run" type="checkbox" checked>Simulation</input>
-            <input id="typ" name="typ" type="hidden" value="{{ typ }}"/>
-            <div>
+            <div style="margin-top: 10px">
+                <input id="dry_run" name="dry_run" type="checkbox" checked><span style="margin-left: 5px"><label
+                    for="dry_run">Simulation (ohne speichern)</label></span></input>
+                <input id="typ" name="typ" type="hidden" value="{{ typ }}"/>
+            </div>
+            <hr style="margin-top: 10px">
+            <div style="margin-top: 10px">
                 <button type="submit">Import</button>
             </div>
         </div>

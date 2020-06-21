@@ -1,16 +1,30 @@
 {% extends "admin/base_site.html" %}
+{% load i18n admin_urls static admin_list %}
+{% load static %}
+{% load fahrtenliste_main_extras %}
+
+{% block title %}Fahrtenliste | Import Ergebnis{% endblock %}
+
+{% block breadcrumbs %}
+    <div class="breadcrumbs">
+        <a href="{% url 'admin:index' %}">{% trans 'Home' %}</a>
+        &rsaquo; <a href="/admin/fahrtenliste_main">Fahrtenliste</a>
+        &rsaquo; <a href="/admin/fahrtenliste_main/{{ model_objekt_url }}">{{ model_objekt_name }}</a>
+        &rsaquo; Import {{ model_objekt_name }} Ergebnis
+    </div>
+{% endblock %}
 
 {% block content %}
     <a style="position: absolute;top: 0" name="top"></a>
     <h1>Import Protokoll</h1>
     <h2>Input:</h2>
     <ul>
-        <li>Datum: {{ timestamp }}
-        <li>Datei: {{ filename }}
-        <li>Format: {{ format }}
-        <li>Beschreibung: {{ beschreibung }}
-        <li>Import Dauer: {{ import_dauer }}
-        <li>Simulation: {{ simulation }}
+        <li>Datum: {{ timestamp | safe }}
+        <li>Datei: {{ filename | safe }}
+        <li>Format: {{ format | safe }}
+        <li>Beschreibung: {{ beschreibung | safe }}
+        <li>Import Dauer: {{ import_dauer | safe }}
+        <li>Simulation: {{ simulation | safe }}
     </ul>
     <h2><a name="neu">Neu</a> ({{ neu|length }}):<a href="#top">^</a></h2>
     <ul>
