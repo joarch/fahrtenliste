@@ -28,7 +28,7 @@ class NumberedCanvas(canvas.Canvas):
 
     def draw_page_number(self, page_count):
         self.setFont("Helvetica", 10)
-        self.drawRightString(200 * mm, 10 * mm,
+        self.drawRightString(115 * mm, 10 * mm,
                              "Seite %d von %d" % (self._pageNumber, page_count))
 
 
