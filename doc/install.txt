@@ -11,10 +11,15 @@
 --- pip install django-reversion
 --- pip install django-reversion-compare
 
--- oder wenn das nicht geht
+-- oder wenn das nicht geht, z.B.:
 --- python3.8\python.exe -m pip install reportlab
+--- python3.8\python.exe -m pip install openpyxl<=3.0.0
+--- python3.8\python.exe -m pip install python-dateutil
 
-- Einstellungen
+- Django Settings
+-- default_settings.py als Beispiel entsprechend verwenden
+
+- Einstellungen für Sktipts
 -- Umgebungsvariablen werden in setenv.bat konfiguriert
 --- Git HOME (VCS für Programmupdates)
 --- Datenbank Datei
