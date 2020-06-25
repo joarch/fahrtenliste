@@ -214,6 +214,7 @@ def _import_fahrt_kunde_adresse(fahrt_source, fahrt_destination, fahrten_in_sour
             aenderungen.append("neuer Kunde")
             kunde = neuer_kunde(fahrt_source, [], dry_run)
             kunden_destination_by_key[key_kunde] = kunde
+            kunde.adresse = fahrt_destination.adresse
         if fahrt_destination.adresse is None and kunde.adresse is not None:
             # wenn Kunde ohne adresse im Input, dann Adresse des Kunden nehmen
             fahrt_destination.adresse = kunde.adresse
@@ -236,6 +237,10 @@ def _import_fahrt_kunde_adresse(fahrt_source, fahrt_destination, fahrten_in_sour
 
     if not dry_run and (new or len(aenderungen) > 0):
         fahrt_destination.save()
+        if fahrt_destination.kunde:
+            fahrt_destination.kunde.save()
+        if fahrt_destination.adresse:
+            fahrt_destination.adresse.save()
 
     if new:
         neu.append(f"Fahrt: {fahrt_mit_link(fahrt_destination, dry_run)}{zusatzinfo_str}")
