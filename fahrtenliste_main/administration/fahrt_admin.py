@@ -11,11 +11,11 @@ from django.utils import formats
 from django_admin_listfilter_dropdown.filters import RelatedDropdownFilter
 from reversion_compare.admin import CompareVersionAdmin
 
-from fahrtenliste_main.fahrt_util import get_next_fahrt_nr
 from fahrtenliste_main.administration.fahrt_admin_report import get_von_bis_aus_request
 from fahrtenliste_main.administration.fahrt_admin_report import show_report
 from fahrtenliste_main.export_import.export_fahrt import export_fahrten
 from fahrtenliste_main.export_import.exports import serve_export
+from fahrtenliste_main.fahrt_util import get_next_fahrt_nr
 from fahrtenliste_main.historisch import str_kunde_historisch, str_adresse_historisch
 from fahrtenliste_main.models import Fahrt
 
@@ -78,6 +78,7 @@ class FahrtAdminForm(forms.ModelForm):
         kunde = self.cleaned_data.get("kunde")
         adresse = self.cleaned_data.get("adresse")
         errors = list()
+
         # TODO als Warnung
         # if kunde is not None:
         #    if adresse is not None and adresse != kunde.adresse:
