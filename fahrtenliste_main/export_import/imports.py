@@ -14,14 +14,17 @@ logger = logging.getLogger(__name__)
 del logging
 
 
-def do_import(import_fct, model_objekt_name, model_objekt_url, request):
+def do_import(import_fct, model_objekt_name, model_objekt_url, request, temp_file_name=None):
     start = datetime.datetime.now()
-    filename = request.FILES['file']
-    import_format = request.POST['format']
-    dry_run = to_bool(request.POST.get('dry_run', False))
+    import_format = request.POST.get('format_key')
+    dry_run = to_bool(request.POST.get('dry_run', True))
+    if temp_file_name is None:
+        file = request.FILES['file']
+    else:
+        file = None
 
     try:
-        result = import_fct(request.user, filename, import_format, dry_run=dry_run)
+        result = import_fct(request.user, file, import_format, dry_run=dry_run, temp_file_name=temp_file_name)
     except ValueError as e:
         messages.error(request, str(e))
         return {}
@@ -49,7 +52,10 @@ def do_import(import_fct, model_objekt_name, model_objekt_url, request):
     end = datetime.datetime.now()
     result["import_dauer"] = str_duration(end - start)
     result["result"] = result_message
-    messages.success(request, mark_safe("Fertig: " + result_message))
+    if dry_run:
+        messages.success(request, mark_safe("Simulation fertig: " + result_message))
+    else:
+        messages.success(request, mark_safe("Fertig: " + result_message))
     log_entry_change(request.user, model_objekt_url, f"{model_objekt_name} Import",
                      result["filename"] + " (" + result["format"] + "): " + result_message_success)
     return result

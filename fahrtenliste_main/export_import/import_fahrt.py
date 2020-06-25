@@ -1,4 +1,5 @@
 import datetime
+import os
 
 import reversion
 
@@ -15,6 +16,7 @@ from fahrtenliste_main.historisch import to_kunde_historisch
 from fahrtenliste_main.models import Adresse, Kunde
 from fahrtenliste_main.models import Fahrt
 from fahrtenliste_main.temp_dir import write_to_temp_file
+from temp_dir import get_temp_file_path
 
 IMPORT_FORMAT_FAHRT_STANDARD = {
     "id": "fahrtenliste",
@@ -48,18 +50,23 @@ IMPORT_FORMATE_FAHRT = {
 }
 
 
-def do_import_fahrten(user, file, format_key, dry_run=True):
+def do_import_fahrten(user, file, format_key, dry_run=True, temp_file_name=None):
     import_format = IMPORT_FORMATE_FAHRT.get(format_key)
     if import_format is None:
         raise RuntimeError(f"Unbekanntes Import Format '{format_key}'!")
 
-    with reversion.create_revision():
-        reversion.set_user(user)
-        reversion.set_comment("Import Kunde ({}): {}".format(import_format["name"], file.name))
-        return _import_fahrt(user, file, import_format, dry_run)
+    file_name = file.name if file is not None else temp_file_name
+
+    if dry_run:
+        return _import_fahrt(user, file, import_format, dry_run, temp_file_name)
+    else:
+        with reversion.create_revision():
+            reversion.set_user(user)
+            reversion.set_comment("Import Fahrten ({}): {}".format(import_format["name"], file_name))
+            return _import_fahrt(user, file, import_format, dry_run, temp_file_name=temp_file_name)
 
 
-def _import_fahrt(user, file, import_format, dry_run, tempfile_mit_timestamp=False):
+def _import_fahrt(user, file, import_format, dry_run, tempfile_mit_timestamp=False, temp_file_name=None):
     neu = list()
     geloescht = list()
     geaendert = list()
@@ -67,7 +74,15 @@ def _import_fahrt(user, file, import_format, dry_run, tempfile_mit_timestamp=Fal
     warnung = list()
     fahrten_in_source = list()
 
-    temp_file_path = write_to_temp_file(user, file, tempfile_mit_timestamp)
+    file_name = file.name if file is not None else temp_file_name
+
+    if temp_file_name is None:
+        temp_file_path = write_to_temp_file(user, file, tempfile_mit_timestamp)
+        temp_file_name = os.path.basename(temp_file_path)
+    else:
+        if file is not None:
+            raise RuntimeError("Fehler In-Memory-File und temp_file_name übergeben.")
+        temp_file_path = get_temp_file_path(user, temp_file_name)
 
     fahrten_source = import_von_excel(temp_file_path, import_format)
     fahrten_source_ohne_id = list(filter(lambda f: is_empty_value(f["id"]), fahrten_source))
@@ -133,7 +148,10 @@ def _import_fahrt(user, file, import_format, dry_run, tempfile_mit_timestamp=Fal
             import_format["beschreibung"],
             von.strftime('%d.%m.%Y'),
             bis.strftime('%d.%m.%Y')),
-        "filename": file.name,
+        "filename": file_name,
+        "temp_file_name": temp_file_name,
+        "typ": import_format["typ"],
+        "format_key": import_format["id"],
         "timestamp": datetime.datetime.now().strftime("%d.%m.%Y %H:%M:%S"),
         "neu": neu,
         "geloescht": geloescht,
@@ -229,7 +247,6 @@ def _import_fahrt_kunde_adresse(fahrt_source, fahrt_destination, fahrten_in_sour
 
     if fahrt_destination.entfernung is None:
         warnungen.append(f"Fahrt: {fahrt_mit_link(fahrt_destination, dry_run)}. Unbekannte Entfernung!")
-
 
 
 def neue_fahrt(fahrt_source):

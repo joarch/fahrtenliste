@@ -50,7 +50,7 @@ def export_nach_excel(namedtuple_in: namedtuple, detail_name: str, data_list: li
             export_name = filename_in if " " not in filename_in else filename_in.split(" ")[0]
             export_beschreibung = filename_in
 
-    timestamp = datetime.datetime.now().strftime("_Export_%Y-%m-%d_%H-%M")
+    timestamp = datetime.datetime.now().strftime("_Export_%Y-%m-%d_%H_%M")
     filename = "{}_{}_{}_{}.xlsx".format(filename_postfix, export_name, detail_name, timestamp)
     filename = re.sub(r'^_', '', filename)
     filename = filename.replace(" ", "_")

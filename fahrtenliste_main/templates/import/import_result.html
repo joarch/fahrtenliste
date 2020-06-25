@@ -24,7 +24,23 @@
         <li>Format: {{ format | safe }}
         <li>Beschreibung: {{ beschreibung | safe }}
         <li>Import Dauer: {{ import_dauer | safe }}
-        <li>Simulation: {{ simulation | safe }}
+            {% if simulation == "ja" %}
+                <li>
+                <div>
+                    <div style="float: left">Simulation: {{ simulation | safe }}</div>
+                    <div style="float: left; margin-left: 10px">
+                        <form method="post">{% csrf_token %}
+                            <button style="color: red">jetzt importieren</button>
+                            <input type="hidden" name="temp_file_name" value="{{ temp_file_name }}"/>
+                            <input type="hidden" name="dry_run" value="0"/>
+                            <input type="hidden" name="typ" value="{{ typ }}"/>
+                            <input type="hidden" name="format_key" value="{{ format_key }}"/>
+                        </form>
+                    </div>
+                </div>
+                {% else %}
+                <li>Der Import wurde durchgeführt
+            {% endif %}
     </ul>
     <h2><a name="neu">Neu</a> ({{ neu|length }}):<a href="#top">^</a></h2>
     <ul>

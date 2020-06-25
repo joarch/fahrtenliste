@@ -1,2 +1,1 @@
-erster import simulation read only
-aus dem result ansicht richtigen import ohne simulation durchführen
+import result Zeitraum als Link zur Fahrten Liste mit von-bis parameter

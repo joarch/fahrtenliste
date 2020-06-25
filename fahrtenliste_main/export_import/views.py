@@ -42,7 +42,7 @@ def _render_oder_import(request, model_objekt_name, model_objekt_url, typ):
 
 def _render_import(request, model_objekt_name, model_objekt_url, typ):
     form = UploadFileForm()
-    return render(request, 'export_import/import_export.html',
+    return render(request, 'import/import.html',
                   {'form': form,
                    'model_objekt_name': model_objekt_name,
                    'model_objekt_url': model_objekt_url,
@@ -50,24 +50,34 @@ def _render_import(request, model_objekt_name, model_objekt_url, typ):
                    'site_header': "Fahrtenliste"})
 
 
-def _import(request, model_objekt_name, model_objekt_url, typ):
-    form = UploadFileForm(request.POST, request.FILES)
-    if form.is_valid():
-        data = form.cleaned_data
-        if data['typ'] == 'Adresse':
-            import_fct = do_import_adressen
-        elif data['typ'] == 'Kunde':
-            import_fct = do_import_kunden
-        elif data['typ'] == 'Fahrt':
-            import_fct = do_import_fahrten
-        else:
-            raise RuntimeError(f"Unbekannter Import Typ: '{data['typ']}'")
-        result = do_import(import_fct, model_objekt_name, model_objekt_url, request)
-        result["model_objekt_name"] = model_objekt_name
-        result["model_objekt_url"] = model_objekt_url
-        result["typ"] = typ
-        result["site_header"] = "Fahrtenliste"
-        return render(request, "export_import/import_export_result.html", result)
+def _map_typ_to_import_fct(typ):
+    if typ == 'Adresse':
+        import_fct = do_import_adressen
+    elif typ == 'Kunde':
+        import_fct = do_import_kunden
+    elif typ == 'Fahrt':
+        import_fct = do_import_fahrten
     else:
-        messages.error(request, "Bitte eine passende Importdatei auswählen.")
-        return _render_import(request, model_objekt_name, model_objekt_url, typ)
+        raise RuntimeError(f"Unbekannter Import Typ: '{typ}'")
+    return import_fct
+
+
+def _import(request, model_objekt_name, model_objekt_url, typ):
+    temp_file_name = request.POST.get("temp_file_name")
+    if temp_file_name is not None:
+        import_fct = _map_typ_to_import_fct(typ)
+        result = do_import(import_fct, model_objekt_name, model_objekt_url, request, temp_file_name)
+    else:
+        form = UploadFileForm(request.POST, request.FILES)
+        if form.is_valid():
+            data = form.cleaned_data
+            import_fct = _map_typ_to_import_fct(data['typ'])
+            result = do_import(import_fct, model_objekt_name, model_objekt_url, request)
+        else:
+            messages.error(request, "Bitte eine passende Importdatei auswählen.")
+            return _render_import(request, model_objekt_name, model_objekt_url, typ)
+    result["model_objekt_name"] = model_objekt_name
+    result["model_objekt_url"] = model_objekt_url
+    result["typ"] = typ
+    result["site_header"] = "Fahrtenliste"
+    return render(request, "import/import_result.html", result)

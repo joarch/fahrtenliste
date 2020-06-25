@@ -64,6 +64,17 @@ def clean_temp_dir(file_count, temp_dir, temp_file, filename_match=None):
         logger.debug(f'Temporäre Datei gelöscht: "{join(temp_dir, path)}"')
 
 
+def get_temp_file_path(user, temp_file_name):
+    """
+    Gibt den vollständigen Pfad der Tempdatei zurück.
+    """
+    temp_dir = get_tempdir(user)
+    temp_file_path = os.path.join(temp_dir, temp_file_name)
+    if not os.path.exists(temp_file_path):
+        raise RuntimeError("Die temporäre Datei existiert nicht mehr.")
+    return temp_file_path
+
+
 def write_to_temp_file(user, file, tempfile_mit_timestamp=False):
     """
     Schreibt das übergebene File in das Temp Verzeichnis.
@@ -71,8 +82,8 @@ def write_to_temp_file(user, file, tempfile_mit_timestamp=False):
     """
     filename, file_extension = os.path.splitext(file.name)
     temp_dir = get_tempdir(user)
-    timestamp = get_timestamp() if tempfile_mit_timestamp else ""
-    temp_file = "{}_{}{}".format(filename, timestamp, file_extension)
+    timestamp = "_{}".format(get_timestamp()) if tempfile_mit_timestamp else ""
+    temp_file = "{}{}{}".format(filename, timestamp, file_extension)
     temp_file_path = os.path.join(temp_dir, temp_file)
 
     clean_temp_dir(10, temp_dir, temp_file)
