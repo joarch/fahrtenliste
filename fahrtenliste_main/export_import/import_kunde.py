@@ -9,7 +9,7 @@ from fahrtenliste_main.export_import.import_adresse import check_aenderung_adres
 from fahrtenliste_main.export_import.imports import import_von_excel
 from fahrtenliste_main.models import Kunde, Adresse
 from fahrtenliste_main.temp_dir import write_to_temp_file
-from temp_dir import get_temp_file_path
+from fahrtenliste_main.temp_dir import get_temp_file_path
 
 IMPORT_FORMAT_KUNDE_STANDARD = {
     "id": "fahrtenliste",

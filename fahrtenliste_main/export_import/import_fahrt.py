@@ -16,7 +16,7 @@ from fahrtenliste_main.historisch import to_kunde_historisch
 from fahrtenliste_main.models import Adresse, Kunde
 from fahrtenliste_main.models import Fahrt
 from fahrtenliste_main.temp_dir import write_to_temp_file
-from temp_dir import get_temp_file_path
+from fahrtenliste_main.temp_dir import get_temp_file_path
 
 IMPORT_FORMAT_FAHRT_STANDARD = {
     "id": "fahrtenliste",
