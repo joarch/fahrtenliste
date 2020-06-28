@@ -1,6 +1,6 @@
 from django import template
 
-import version
+from fahrtenliste_main import version
 
 register = template.Library()
 
