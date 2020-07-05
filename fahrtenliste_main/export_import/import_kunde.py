@@ -8,8 +8,8 @@ from fahrtenliste_main.export_import.import_adresse import check_aenderung_adres
     adresse_key
 from fahrtenliste_main.export_import.imports import import_von_excel
 from fahrtenliste_main.models import Kunde, Adresse
-from fahrtenliste_main.temp_dir import write_to_temp_file
 from fahrtenliste_main.temp_dir import get_temp_file_path
+from fahrtenliste_main.temp_dir import write_to_temp_file
 
 IMPORT_FORMAT_KUNDE_STANDARD = {
     "id": "fahrtenliste",
@@ -196,9 +196,14 @@ def _import_kunde_adresse(kunde_source, kunde_destination, kunden_in_source, adr
                 geaendert.append(aenderung_adresse)
 
 
+def capitalize(value):
+    return value.capitalize() if value else ""
+
+
 def neuer_kunde(kunde_source, neu, dry_run):
-    kunde_destination = Kunde(anrede=kunde_source['anrede'], vorname=kunde_source['vorname'],
-                              nachname=kunde_source['nachname'])
+    kunde_destination = Kunde(anrede=capitalize(kunde_source['anrede']),
+                              vorname=capitalize(kunde_source['vorname']),
+                              nachname=capitalize(kunde_source['nachname']))
     if not dry_run:
         kunde_destination.save()
     neu.append(f"Kunde: {kunde_mit_link(kunde_destination, dry_run)}")
