@@ -15,8 +15,8 @@ from fahrtenliste_main.historisch import str_kunde_historisch, str_adresse_histo
 from fahrtenliste_main.historisch import to_kunde_historisch
 from fahrtenliste_main.models import Adresse, Kunde
 from fahrtenliste_main.models import Fahrt
-from fahrtenliste_main.temp_dir import write_to_temp_file
 from fahrtenliste_main.temp_dir import get_temp_file_path
+from fahrtenliste_main.temp_dir import write_to_temp_file
 
 IMPORT_FORMAT_FAHRT_STANDARD = {
     "id": "fahrtenliste",
@@ -112,9 +112,10 @@ def _import_fahrt(user, file, import_format, dry_run, tempfile_mit_timestamp=Fal
         if fahrt_destination is None:
             kunde = kunden_destination_by_key.get(kunde_key(fahrt_source["vorname"], fahrt_source["nachname"]))
             if kunde is None:
-                kunde = _find_eindeutigen_kunden_mit_nachname(fahrt_source)
+                kunde = _find_eindeutigen_kunden_mit_name(fahrt_source)
                 if kunde is not None:
                     fahrt_source["vorname"] = kunde.vorname
+                    fahrt_source["nachname"] = kunde.nachname
                     key = fahrt_key(str_datum(fahrt_source["datum"]), fahrt_source["vorname"], fahrt_source["nachname"])
                     fahrt_destination = fahrten_destination_by_key.get(key)
 
@@ -301,7 +302,11 @@ def check_aenderung_fahrt(fahrt_source, fahrt_destination):
 def _ermittel_zeitraum(fahrten_source):
     von = datetime.datetime(3000, 12, 31)
     bis = datetime.datetime(2000, 1, 1)
-    for fahrt_source in fahrten_source:
+    for idx, fahrt_source in enumerate(fahrten_source):
+        if is_empty_value(fahrt_source["datum"]):
+            raise ValueError("In der Import Datei gibt es eine Zeile in der das Datum fehlt, "
+                             f"bitte in der Import Datei vervollständigen. Datensatz: {idx + 1}.")
+
         von = fahrt_source["datum"] if fahrt_source["datum"] < von else von
         bis = fahrt_source["datum"] if fahrt_source["datum"] > bis else bis
     return von, bis
@@ -337,13 +342,18 @@ def fahrt_mit_link(fahrt, ohne_link=False):
     return link
 
 
-def _find_eindeutigen_kunden_mit_nachname(fahrt_source):
+def _find_eindeutigen_kunden_mit_name(fahrt_source):
     if not is_empty_value(fahrt_source["vorname"]):
         # wenn vorname und nachname gegeben, dann normale Suche über Vorname und Nachmane
-        return None
-    kunden = Kunde.objects.filter(nachname=fahrt_source["nachname"])
+        kunden = Kunde.objects.filter(vorname__iexact=fahrt_source["vorname"],
+                                      nachname__iexact=fahrt_source["nachname"])
+    else:
+        kunden = Kunde.objects.filter(nachname__iexact=fahrt_source["nachname"])
     if len(kunden) == 1:
         return kunden[0]
     if len(kunden) > 0:
-        raise ValueError(f"Es existiert mehr als ein Kunde mit dem Nachnamen '{fahrt_source['nachname']}'")
+        raise ValueError(
+            f"Ein Kunde in der Import Datei ist nicht eindeutig."
+            f" Es existiert mehr als ein Kunde mit dem Nachnamen '{fahrt_source['nachname']}',"
+            f" bitte in der Import Datei vervollständigen.")
     return None
