@@ -6,6 +6,7 @@ call setenv.bat
 
 IF DEFINED GIT_HOME (
 cd %SOURCE_DIR%
+%GIT_HOME%\bin\git fetch
 %GIT_HOME%\bin\git log --all --oneline -n1 > ../update_2.log
 cd ..
 fc update_1.log update_2.log
